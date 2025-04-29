@@ -1,16 +1,20 @@
 module.exports = {
-  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./backoffice/src/components/**/*.{vue,js,ts,jsx,tsx}",
+  ],
   theme: {
-    container: {
-      center: true,
-      padding: {
-        DEFAULT: "1rem", // 16px on mobile
-        sm: "1rem",
-        md: "2rem",
-        lg: "4rem",
-        xl: "5rem",
-      },
-    },
+    // container: {
+    //   center: true,
+    //   padding: {
+    //     DEFAULT: "1rem", // 16px on mobile
+    //     sm: "1rem",
+    //     md: "2rem",
+    //     lg: "4rem",
+    //     xl: "5rem",
+    //   },
+    // },
     extend: {
       colors: {
         "base-white": "#FFFFFF",
