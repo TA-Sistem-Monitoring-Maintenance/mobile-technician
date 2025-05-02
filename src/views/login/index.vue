@@ -5,6 +5,7 @@ import { handleLogin } from "./store.js";
 import MyButton from "@components/Button/MyButton.vue";
 import MyTextField from "@components/TextField/MyTextField.vue";
 import { loginSchema } from "./schema.js"; // Import the schema
+import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 
 // State untuk username, password, error message, dan loading
 const username = ref("");
@@ -55,7 +56,7 @@ const onSubmit = async () => {
   <main class="flex h-screen">
     <!-- Bagian Kiri -->
     <section
-      class="w-full md:w-1/2 bg-white flex flex-col justify-center items-center p-8 md:p-12"
+      class="w-full bg-white flex flex-col justify-center items-center p-8 md:p-12"
     >
       <div class="text-center">
         <img
@@ -67,6 +68,20 @@ const onSubmit = async () => {
           Log in to your account
         </h1>
         <p class="text-gray-600">Welcome back! Please enter your details.</p>
+      </div>
+      <div>
+        <MyButtonGroupV2
+          :buttons="[
+            { label: 'Login', value: 'ruangan' },
+            { label: 'Ruangan', value: 'alat' },
+          ]"
+          :value="selectedTab"
+          :onChange="
+            (val) => {
+              handleTabChange(val);
+            }
+          "
+        />
       </div>
       <form @submit.prevent="onSubmit" class="mt-10 w-full max-w-sm">
         <div class="mb-6">
@@ -114,21 +129,6 @@ const onSubmit = async () => {
           </MyButton>
         </div>
       </form>
-    </section>
-
-    <!-- Bagian Kanan -->
-    <section class="w-1/2 bg-cover bg-center relative hidden md:block">
-      <img
-        src="../../assets/images/Gedung.png"
-        alt="App Gedung"
-        class="w-full h-full object-cover"
-      />
-      <div
-        class="absolute bottom-0 left-0 w-full bg-black bg-opacity-50 text-white p-6"
-      >
-        <h2 class="text-3xl font-semibold">Telkom University</h2>
-        <p class="text-sm">Maintenance 2024</p>
-      </div>
     </section>
   </main>
 </template>
