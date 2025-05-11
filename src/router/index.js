@@ -26,7 +26,7 @@ const router = createRouter({
 
 // Menambahkan logika sebelum navigasi
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!VueCookies.get("tokenMonitoring"); // Mengecek token di cookies
+  const isAuthenticated = !!VueCookies.get("tokenMonitoringMobile"); // Mengecek token di cookies
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next("/login"); // Redirect ke login jika tidak ada token
