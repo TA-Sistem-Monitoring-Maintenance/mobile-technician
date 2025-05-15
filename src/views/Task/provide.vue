@@ -134,10 +134,13 @@ const getDetail = async (body) => {
     .catch(MyToaster);
 };
 
-const showRoom = async (id) =>
-  await Service.showRoom(id)
+const checkRoom = async (id, body) => {
+  const formData = new FormData();
+  formData.append("room_id", body);
+  return await Service.checkRoom(id, formData)
     .then((res) => res.data)
     .catch(MyToaster);
+};
 
 const deleteRoom = async (data) =>
   await Service.deleteRoom({ ids: data })
@@ -171,7 +174,7 @@ provide("roomsContext", {
   downloadTemplateImport,
 
   deleteRoom,
-  showRoom,
+  checkRoom,
   updateRoom,
   getDetail,
   detailTask,

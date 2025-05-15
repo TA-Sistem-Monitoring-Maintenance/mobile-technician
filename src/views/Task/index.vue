@@ -57,24 +57,6 @@ const router = useRouter();
 </script>
 
 <template>
-  <MyModalSlider
-    :open="currentSlider?.current === 'detail-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><DetailSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'form-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><formSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'import-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><importSlider /> </template>
-  </MyModalSlider>
   <simplebar class="h-full" forceVisible="y" autoHide="{false}">
     <div class="bg-white">
       <div class="pb-3 gap-3">
@@ -108,7 +90,11 @@ const router = useRouter();
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
-                  router.push({ path: `/task/${value?.id}` });
+                  if (value?.status === 'scheduled') {
+                    router.push(`/task/scan/${value.id}`);
+                  } else {
+                    router.push(`/task/${value.id}`);
+                  }
                 }
               "
               @selectionChange="
