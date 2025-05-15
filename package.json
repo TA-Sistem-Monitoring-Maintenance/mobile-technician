@@ -13,6 +13,7 @@
     "@fullcalendar/google-calendar": "^6.1.15",
     "@fullcalendar/vue3": "^6.1.15",
     "@mdi/js": "^7.4.47",
+    "@zxing/browser": "^0.1.5",
     "apexcharts": "^4.7.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",

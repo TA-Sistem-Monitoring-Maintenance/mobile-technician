@@ -6,6 +6,10 @@ import ForgotPassword from "../views/ForgotPassword/provide.vue";
 import Task from "../views/Task/provide.vue";
 import TaskDetail from "../views/Task/TaskDetail.vue";
 import Index from "../views/Task/index.vue";
+import ScanUser from "../views/User/scan/provide.vue";
+import Complaint from "../views/User/scan/complaint/provide.vue";
+import History from "../views/User/scan/history/provide.vue";
+// import Detail from "../views/User/scan/history/detail/detailHistory.vue";
 
 // Definisi Rute
 const routes = [
@@ -29,11 +33,42 @@ const routes = [
   {
     path: "/task",
     component: Task,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/scanuser",
+    name: "ScanUser",
+    component: ScanUser,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/complaint",
+    name: "Complaint",
+    component: Complaint,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/history",
+    name: "History",
+    component: History,
+    meta: { requiresAuth: true },
     children: [
-      { path: "", component: Index },
-      { path: ":id", component: TaskDetail },
+      // {
+      //   path: "detail",
+      //   name: "Detail",
+      //   component: Detail,
+      //   meta: { requiresAuth: true },
+      // },
     ],
   },
+
+  // {
+  //   path: "/task/:id",
+  //   name: "TaskDetail",
+  //   component: TaskDetail,
+  //   props: true, // biar `id` di-route bisa diterima sebagai prop
+  //   meta: { requiresAuth: true },
+  // },
 ];
 
 // Konfigurasi Vue Router
