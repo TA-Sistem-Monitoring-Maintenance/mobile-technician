@@ -27,18 +27,22 @@ export async function handleLogin(body) {
     // Get the timezone
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Send the request
-    const response = await axios
-      .post("http://localhost:3000/monitoring/v1/auth/", formData, {
+    const response = await axios.post(
+      "http://localhost:3000/monitoring/v1/auth/",
+      formData,
+      {
         headers: {
           "Content-Type": "multipart/form-data",
           "Time-Zone": timeZone,
         },
-      })
-      .then(MyToaster)
-      .catch(MyToaster);
-
-    VueCookies.set("tokenMonitoring", response.data.token, "1d");
-    body.router.push("/dashboard");
+      }
+    );
+    // .then(MyToaster)
+    // .catch(MyToaster);
+    console.log("jajajajajaj", response);
+    MyToaster(response);
+    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+    body.router.push("/task");
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
   }

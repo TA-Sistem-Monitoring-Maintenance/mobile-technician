@@ -38,8 +38,8 @@ async function handleLogin() {
       }
     );
 
-    VueCookies.set("tokenMonitoring", response.data.token, "1d");
-    router.push("/dashboard");
+    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+    router.push("/task");
   } catch (error) {
     console.error("Login failed:", error.response?.data || error.message);
   }

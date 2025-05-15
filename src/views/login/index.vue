@@ -72,8 +72,8 @@ const onSubmit = async () => {
       <div>
         <MyButtonGroupV2
           :buttons="[
-            { label: 'Login', value: 'ruangan' },
-            { label: 'Ruangan', value: 'alat' },
+            { label: 'Login', value: 'login' },
+            { label: 'Register', value: 'register' },
           ]"
           :value="selectedTab"
           :onChange="

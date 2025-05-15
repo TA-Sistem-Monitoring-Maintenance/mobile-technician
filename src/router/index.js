@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import VueCookies from "vue-cookies";
 
 import Login from "../views/login/index.vue";
+import ForgotPassword from "../views/ForgotPassword/provide.vue";
+import Task from "../views/Task/provide.vue";
 
 // Definisi Rute
 const routes = [
@@ -16,6 +18,25 @@ const routes = [
     component: Login,
     meta: { requiresAuth: false },
   },
+  {
+    path: "/forgot-password",
+    name: "ForgotPassword",
+    component: ForgotPassword,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/task",
+    name: "Task",
+    component: Task,
+    meta: { requiresAuth: true },
+  },
+  // {
+  //   path: "/task/:id",
+  //   name: "TaskDetail",
+  //   component: TaskDetail,
+  //   props: true, // biar `id` di-route bisa diterima sebagai prop
+  //   meta: { requiresAuth: true },
+  // },
 ];
 
 // Konfigurasi Vue Router
