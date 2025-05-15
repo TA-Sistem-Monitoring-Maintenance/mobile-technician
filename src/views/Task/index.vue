@@ -20,6 +20,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
+import { useRouter } from "vue-router";
 
 const {
   getRooms = () => Promise.resolve(),
@@ -52,6 +53,7 @@ watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
 console.log(check);
+const router = useRouter();
 </script>
 
 <template>
@@ -106,6 +108,7 @@ console.log(check);
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
+                  router.push({ path: `/task/${value?.id}` });
                 }
               "
               @selectionChange="

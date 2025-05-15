@@ -4,6 +4,8 @@ import VueCookies from "vue-cookies";
 import Login from "../views/login/index.vue";
 import ForgotPassword from "../views/ForgotPassword/provide.vue";
 import Task from "../views/Task/provide.vue";
+import TaskDetail from "../views/Task/TaskDetail.vue";
+import Index from "../views/Task/index.vue";
 
 // Definisi Rute
 const routes = [
@@ -26,17 +28,12 @@ const routes = [
   },
   {
     path: "/task",
-    name: "Task",
     component: Task,
-    meta: { requiresAuth: true },
+    children: [
+      { path: "", component: Index },
+      { path: ":id", component: TaskDetail },
+    ],
   },
-  // {
-  //   path: "/task/:id",
-  //   name: "TaskDetail",
-  //   component: TaskDetail,
-  //   props: true, // biar `id` di-route bisa diterima sebagai prop
-  //   meta: { requiresAuth: true },
-  // },
 ];
 
 // Konfigurasi Vue Router
