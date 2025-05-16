@@ -9,7 +9,7 @@ import { debounce } from "lodash";
 import { Service } from "./service";
 import MyToaster from "@components/Toaster/MyToaster";
 
-const rooms = ref({});
+const task = ref({});
 const currentSlider = ref({
   current: "",
   status: false,
@@ -38,14 +38,14 @@ const router = useRouter();
 const base_url = import.meta.env.VITE_APP_BASE_URL;
 console.log(base_url);
 
-async function getRooms() {
+async function getTask() {
   try {
-    const response = await Service.getRooms(params);
-    rooms.value = response;
+    const response = await Service.getTask(params);
+    task.value = response;
     console.log(response);
     return response; // Return response to be used in provide.vue
   } catch (error) {
-    console.error("Error fetching rooms:", error);
+    console.error("Error fetching task:", error);
   }
 }
 
@@ -71,7 +71,7 @@ const handleCurrentModal = (modal, id = null) => {
   }
 };
 
-async function createRoom(body) {
+async function createTask(body) {
   try {
     const formData = new FormData();
     formData.append("name", body.name);
@@ -82,17 +82,17 @@ async function createRoom(body) {
       body?.isActive === false ? new Date().toISOString() : ""
     );
 
-    await Service.createRoom(formData, "form-data")
+    await Service.createTask(formData, "form-data")
       .then(MyToaster)
       .then(() => handleCurrentSlider({ status: false, current: null }))
-      .then(getRooms)
+      .then(getTask)
       .catch(MyToaster);
   } catch (error) {
-    console.error("Error creating room:", error);
+    console.error("Error creating Task:", error);
   }
 }
 
-async function updateRoom(body) {
+async function updateTask(body) {
   try {
     const formData = new FormData();
     formData.append("name", body.name);
@@ -103,78 +103,78 @@ async function updateRoom(body) {
       body?.isActive === false ? new Date().toISOString() : ""
     );
 
-    await Service.updateRoom(formData, "form-data")
+    await Service.updateTask(formData, "form-data")
       .then(MyToaster)
       .then(() => handleCurrentSlider({ status: false, current: null }))
-      .then(getRooms)
+      .then(getTask)
       .catch(MyToaster);
   } catch (error) {
-    console.error("Error creating room:", error);
+    console.error("Error creating Task:", error);
   }
 }
 
-const searchRoom = async (query) => {
+const searchTask = async (query) => {
   console.log("query", query);
-  return Service.searchRoom(query);
+  return Service.searchTask(query);
 };
 const downloadTemplateImport = () => {
   console.log("downloadTemplateImport");
   return Service.downloadTemplateImport();
 };
 
-const importRoom = async (data) => {
+const importTask = async (data) => {
   const formData = new FormData();
   console.log(data);
   console.log("import jalan", data);
   data.forEach((e) => {
-    formData.append("rooms", e);
+    formData.append("task", e);
   });
-  return Service.importRoom(formData)
+  return Service.importTask(formData)
     .then(MyToaster)
-    .then(getRooms)
+    .then(getTask)
     .then(handleCurrentSlider(null))
     .catch(MyToaster);
 };
 
-const showRoom = async (id) =>
-  await Service.showRoom(id)
+const showTask = async (id) =>
+  await Service.showTask(id)
     .then((res) => res.data)
     .catch(MyToaster);
 
-const deleteRoom = async (data) =>
-  await Service.deleteRoom({ ids: data })
+const deleteTask = async (data) =>
+  await Service.deleteTask({ ids: data })
     .then(MyToaster)
-    .then(getRooms)
+    .then(getTask)
     .catch(MyToaster);
 
 watch(
   () => params,
   debounce(() => {
-    console.log("Params changed, fetching rooms...", params?.status);
-    getRooms();
+    console.log("Params changed, fetching task...", params?.status);
+    getTask();
   }, 500),
   { deep: true }
 );
 
-provide("roomsContext", {
-  getRooms,
-  rooms,
+provide("taskContext", {
+  getTask,
+  task,
   currentSlider,
   handleCurrentSlider,
-  createRoom,
+  createTask,
   params,
   handleCurrentModal,
   currentModal,
   check,
   searchGrade,
-  searchRoom,
+  searchTask,
   searchLocation: Service.searchLocation,
   searchCategory: Service.searchCategory,
   downloadTemplateImport,
-  importRoom,
-  deleteRoom,
-  showRoom,
-  updateRoom,
+  importTask,
+  deleteTask,
+  showTask,
+  updateTask,
 });
 </script>
 
