@@ -14,7 +14,6 @@ import { watchEffect } from "vue";
 import MyChip from "@components/Chip/MyChip.vue";
 import MyAsyncDropdown from "@components/Autocomplete/MyAsyncDropdown.vue";
 import MyTextArea from "@components/TextField/MyTextArea.vue";
-import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 
 import simplebar from "simplebar-vue";
 import { SearchLg, Trash01 } from "untitledui-js/vue";
@@ -23,6 +22,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
+import MyDropzone from "../../../../components/Dropzone/MyDropzone.vue";
 
 const {
   getRooms = () => Promise.resolve(),
@@ -145,19 +145,10 @@ console.log(check);
           ></MyDropzone>
         </div>
         <div class="flex justify-end gap-2">
-          <MyButton
-            color="secondary"
-            variant="outlined"
-            size="md"
-          >
+          <MyButton color="secondary" variant="outlined" size="md">
             <p class="text-sm-semibold">History</p>
           </MyButton>
-          <MyButton
-            type="submit"
-            color="primary"
-            variant="filled"
-            size="md"
-          >
+          <MyButton type="submit" color="primary" variant="filled" size="md">
             <p class="text-sm-semibold">Send</p>
           </MyButton>
         </div>

@@ -20,6 +20,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
+import { useRouter } from "vue-router";
 
 const {
   getRooms = () => Promise.resolve(),
@@ -52,27 +53,10 @@ watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
 console.log(check);
+const router = useRouter();
 </script>
 
 <template>
-  <MyModalSlider
-    :open="currentSlider?.current === 'detail-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><DetailSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'form-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><formSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'import-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><importSlider /> </template>
-  </MyModalSlider>
   <simplebar class="h-full" forceVisible="y" autoHide="{false}">
     <div class="bg-white">
       <div class="pb-3 gap-3">
@@ -106,6 +90,11 @@ console.log(check);
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
+                  if (value?.status === 'scheduled') {
+                    router.push(`/task/scan/${value.id}`);
+                  } else {
+                    router.push(`/task/${value.id}`);
+                  }
                 }
               "
               @selectionChange="

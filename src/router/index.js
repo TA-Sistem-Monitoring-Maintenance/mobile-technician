@@ -4,9 +4,12 @@ import VueCookies from "vue-cookies";
 import Login from "../views/login/index.vue";
 import ForgotPassword from "../views/ForgotPassword/provide.vue";
 import Task from "../views/Task/provide.vue";
+import TaskDetail from "../views/Task/TaskDetail.vue";
+import Index from "../views/Task/index.vue";
 import ScanUser from "../views/User/scan/provide.vue";
 import Complaint from "../views/User/scan/complaint/provide.vue";
 import History from "../views/User/scan/history/provide.vue";
+import Scan from "../views/Task/scan.vue";
 // import Detail from "../views/User/scan/history/detail/detailHistory.vue";
 
 // Definisi Rute
@@ -30,9 +33,13 @@ const routes = [
   },
   {
     path: "/task",
-    name: "Task",
     component: Task,
     meta: { requiresAuth: true },
+    children: [
+      { path: "", component: Index },
+      { path: ":id", component: TaskDetail },
+      { path: "scan/:id", component: Scan },
+    ],
   },
   {
     path: "/scanuser",
@@ -59,8 +66,8 @@ const routes = [
       //   meta: { requiresAuth: true },
       // },
     ],
-  }
-  
+  },
+
   // {
   //   path: "/task/:id",
   //   name: "TaskDetail",
