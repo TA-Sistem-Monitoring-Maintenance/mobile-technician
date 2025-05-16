@@ -22,29 +22,29 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 import { FilterLines } from "untitledui-js/vue";
 
 const {
-  getRooms = () => Promise.resolve(),
-  rooms,
+  getTask = () => Promise.resolve(),
+  task,
   handleCurrentSlider,
   currentSlider,
   params,
   handleCurrentModal,
   currentModal,
   check,
-  deleteRoom,
-} = inject("roomsContext", {});
+  deleteTask,
+} = inject("taskContext", {});
 const tableData = ref([]);
 
 const handleChangePage = async (newPage) => {
   params.page = newPage;
-  await getRooms();
+  await getTask();
 };
 
 onMounted(async () => {
   console.log("jalan");
   try {
-    await getRooms();
+    await getTask();
   } catch (error) {
-    console.error("Failed to fetch rooms:", error);
+    console.error("Failed to fetch task:", error);
   }
 });
 
@@ -102,7 +102,7 @@ console.log(check);
         >
           <div class="">
             <MyDataTable
-              :values="rooms"
+              :values="task"
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
@@ -117,23 +117,20 @@ console.log(check);
               @changePage="handleChangePage"
             >
               <template #header>
-                <MyColumn field="name" header="Name" />
-                <MyColumn header="Detail" />
-                <MyColumn field="Status" header="Location" />
+                <MyColumn header="Room" />
+                <MyColumn header="Name" />
+                <MyColumn header="Status" />
               </template>
 
               <template #body="{ rowData }">
-                <MyColumn :rowData="rowData" field="name"> </MyColumn>
-                <MyColumn :rowData="rowData" field="detail">
-                  <p class="text-sm-regular text-gray/600">
-                    {{ rowData.ticket?.asset?.room?.location?.name }}
-                    {{ rowData.ticket?.asset?.room?.name }}
-                  </p>
-                  <p class="text-sm-regular text-gray/600">
-                    {{ rowData.ticket?.asset?.name }}
+                <MyColumn :rowData="rowData">
+                  <p class="text-sm-regular">
+                    {{ rowData.asset?.room?.name }}
+                    {{ rowData.asset?.room?.location?.name }}
                   </p>
                 </MyColumn>
-                <MyColumn :rowData="rowData" field="deleted_at">
+                <MyColumn :rowData="rowData"> {{ rowData.asset?.name }}</MyColumn>
+                <MyColumn :rowData="rowData">
                   <MyChip
                     :label="rowData.status"
                     :color="rowData.status ? 'warning' : 'success'"
@@ -147,8 +144,8 @@ console.log(check);
           </div>
         </div>
         <div class="flex">
-          <!-- <RoomActions class="bg-white px-8" />
-          {{ rooms.value }} -->
+          <!-- <TaskActions class="bg-white px-8" />
+          {{ task.value }} -->
 
           <!-- Table -->
         </div>

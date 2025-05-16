@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Menu02 } from "untitledui-js/vue";
-import { onClickOutside } from "@vueuse/core"; // Impor untuk click outside
+// import { onClickOutside } from "@vueuse/core"; // Impor untuk click outside
 
 // Placeholder untuk gambar profil (tidak digunakan di contoh ini, tapi ada di kode asli)
 const profilePicture = ref();
@@ -38,19 +38,19 @@ const logout = () => {
 };
 
 // Fungsi untuk menutup dropdown ketika klik di luar area dropdown dan tombol menu
-onClickOutside(
-  dropdownMenuRef,
-  (event) => {
-    // Pastikan klik tidak terjadi pada tombol menu itu sendiri
-    // karena tombol menu sudah memiliki @click handler sendiri untuk toggle
-    if (menuButtonRef.value && !menuButtonRef.value.contains(event.target)) {
-      if (isDropdownOpen.value) {
-        isDropdownOpen.value = false;
-      }
-    }
-  },
-  { ignore: [menuButtonRef] } // Abaikan klik pada menuButtonRef karena sudah dihandle
-);
+// onClickOutside(
+//   dropdownMenuRef,
+//   (event) => {
+//     // Pastikan klik tidak terjadi pada tombol menu itu sendiri
+//     // karena tombol menu sudah memiliki @click handler sendiri untuk toggle
+//     if (menuButtonRef.value && !menuButtonRef.value.contains(event.target)) {
+//       if (isDropdownOpen.value) {
+//         isDropdownOpen.value = false;
+//       }
+//     }
+//   },
+//   { ignore: [menuButtonRef] } // Abaikan klik pada menuButtonRef karena sudah dihandle
+// );
 </script>
 
 <template>

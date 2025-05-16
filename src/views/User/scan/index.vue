@@ -14,14 +14,15 @@ import { watchEffect } from "vue";
 import MyChip from "@components/Chip/MyChip.vue";
 
 import simplebar from "simplebar-vue";
-import { SearchLg, Trash01 } from "untitledui-js/vue";
+import { ChevronLeft, SearchLg, Trash01 } from "untitledui-js/vue";
 import MyButtonGroupV3 from "@components/Button/MyButtonGroupV3.vue";
 import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 // import { BrowserQRCodeReader } from '@zxing/browser';
-import { BrowserMultiFormatReader, BrowserCodeReader } from '@zxing/browser';
+import { BrowserMultiFormatReader, BrowserCodeReader } from "@zxing/browser";
+import { useRouter } from "vue-router";
 
 let codeReader;
 
@@ -40,80 +41,71 @@ onMounted(async () => {
         if (res) {
           result.value = res.getText();
         }
-        if (err && !err.message.includes('No MultiFormat Readers were able to detect the code')) {
+        if (
+          err &&
+          !err.message.includes(
+            "No MultiFormat Readers were able to detect the code"
+          )
+        ) {
           console.error(err);
         }
       }
     );
   } catch (error) {
-    console.error('Camera error:', error);
+    console.error("Camera error:", error);
   }
 });
-
-
+const router = useRouter();
 
 const video = ref(null);
-const result = ref('');
+const result = ref("");
 
-const {
-  getRooms = () => Promise.resolve(),
-  rooms,
-  handleCurrentSlider,
-  currentSlider,
-  params,
-  handleCurrentModal,
-  currentModal,
-  check,
-  deleteRoom,
-} = inject("roomsContext", {});
+const { checkRoom } = inject("roomsContext", {});
 const tableData = ref([]);
 
-const handleChangePage = async (newPage) => {
-  params.page = newPage;
-  await getRooms();
-};
+console.log(result);
 
-watchEffect(() => {
-  console.log("Current Modal State:", currentModal.value);
+// onBeforeUnmount(() => {
+//   codeReader?.reset();
+// });
+watchEffect(async () => {
+  const currentResult = result.value;
+  const id = window.location.pathname;
+  const parts = id.split("/");
+  const uuid = parts[parts.length - 1];
+  if (currentResult) {
+    // Navigates if currentResult is truthy
+    console.log(`Result is "${currentResult}". Navigating via watchEffect...`);
+    const data = await checkRoom(uuid, currentResult); // Directly await the promise
+    console.log("Room check successful:", data);
+    if (data === "success") {
+      router.push(`${window.location.pathname}/work-submission`);
+    } else {
+      router.push(`${window.location.pathname}/not-match`);
+    }
+  }
 });
-console.log(check);
-
-
-onBeforeUnmount(() => {
-  codeReader?.reset();
-});
-
-
 </script>
 
 <template>
-  <MyModalSlider
-    :open="currentSlider?.current === 'detail-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><DetailSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'form-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><formSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'import-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><importSlider /> </template>
-  </MyModalSlider>
   <simplebar class="h-full" forceVisible="y" autoHide="{false}">
     <div class="bg-white">
-      <div class="pb-3 gap-3">
-        <p class="text-lg-semibold text-gray/900">Scan User</p>
-        <p class="text-sm-regular text-gray/600 pb-2">
-          scan the damaged device in the room
-        </p>
-        <hr class="py-1" />
+      <div class="flex flex-rows gap-3">
+        <button
+          @click="router.go(-1)"
+          class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Kembali ke daftar task"
+        >
+          <ChevronLeft class="h-6 w-6 text-gray-700" />
+        </button>
+        <div class="flex flex-col">
+          <p class="text-lg-semibold text-gray/900">Scan QR Code</p>
+          <p class="text-sm-regular text-gray/600 pb-2">
+            Scan qr code in the room of the task
+          </p>
+        </div>
       </div>
+      <hr class="py-2" />
       <div class="flex flex-col gap-4">
         <div class="scanner-container">
           <video

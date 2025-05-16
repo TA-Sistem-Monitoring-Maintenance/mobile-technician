@@ -21,7 +21,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import { useRouter } from "vue-router";
-import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
+// import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
 
 const { params, getDetail, detailTask } = inject("roomsContext", {});

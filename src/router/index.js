@@ -9,6 +9,9 @@ import Index from "../views/Task/index.vue";
 import ScanUser from "../views/User/scan/provide.vue";
 import Complaint from "../views/User/scan/complaint/provide.vue";
 import History from "../views/User/scan/history/provide.vue";
+import DetailHistory from "../views/User/scan/history/detail/detail.vue";
+import Profile from "../views/profile/provide.vue";
+
 import Scan from "../views/Task/scan.vue";
 import NotMatch from "../views/Task/notMatch.vue";
 import FormTechnician from "../views/Task/formTechnician.vue";
@@ -31,6 +34,12 @@ const routes = [
     path: "/forgot-password",
     name: "ForgotPassword",
     component: ForgotPassword,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
     meta: { requiresAuth: false },
   },
   {
@@ -61,6 +70,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/detail",
+    name: "DetailHistory",
+    component: DetailHistory,
+    meta: { requiresAuth: true }  
+  },
+  {
     path: "/history",
     name: "History",
     component: History,
@@ -68,8 +83,8 @@ const routes = [
     children: [
       // {
       //   path: "detail",
-      //   name: "Detail",
-      //   component: Detail,
+      //   name: "DetailHistory",
+      //   component: DetailHistory,
       //   meta: { requiresAuth: true },
       // },
     ],
