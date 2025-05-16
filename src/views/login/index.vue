@@ -13,6 +13,7 @@ const password = ref("");
 const usernameError = ref(""); // Error message for username
 const passwordError = ref(""); // Error message for password
 const isLoading = ref(false);
+const selectedTab = ref("login");
 
 const router = useRouter();
 
@@ -78,55 +79,116 @@ const onSubmit = async () => {
           :value="selectedTab"
           :onChange="
             (val) => {
-              handleTabChange(val);
+              selectedTab = val;
             }
           "
         />
       </div>
       <form @submit.prevent="onSubmit" class="mt-10 w-full max-w-sm">
-        <div class="mb-6">
-          <label for="username" class="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <MyTextField
-            type="text"
-            id="username"
-            v-model="username"
-            placeholder="Enter your email"
-            :error-message="usernameError"
-          />
+        <div v-if="selectedTab === 'register'">
+          <div class="mb-6">
+            <label
+              for="username"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <MyTextField
+              type="text"
+              id="username"
+              v-model="username"
+              placeholder="Enter your email"
+              :error-message="usernameError"
+            />
+          </div>
+          <div class="mb-6">
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <MyTextField
+              type="password"
+              id="password"
+              v-model="password"
+              placeholder="Enter your password"
+              :error-message="passwordError"
+            />
+          </div>
+          <div class="flex justify-end items-center mb-6">
+            <router-link
+              to="/forgot-password"
+              class="text-sm-semibold text-purple-600 hover:underline"
+            >
+              Forgot password
+            </router-link>
+          </div>
+          <div class="flex justify-center">
+            <MyButton
+              expanded=""
+              class="w-full py-3 rounded-lg"
+              color="primary"
+              variant="filled"
+              :disabled="isLoading"
+              @click="onSubmit"
+            >
+              <p class="text-md-semibold">Sign in</p>
+            </MyButton>
+          </div>
         </div>
-        <div class="mb-6">
-          <label for="password" class="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <MyTextField
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="Enter your password"
-            :error-message="passwordError"
-          />
-        </div>
-        <div class="flex justify-end items-center mb-6">
-          <router-link
-            to="/forgot-password"
-            class="text-sm-semibold text-purple-600 hover:underline"
-          >
-            Forgot password
-          </router-link>
-        </div>
-        <div class="flex justify-center">
-          <MyButton
-            expanded=""
-            class="w-full py-3 rounded-lg"
-            color="primary"
-            variant="filled"
-            :disabled="isLoading"
-            @click="onSubmit"
-          >
-            <p class="text-md-semibold">Sign in</p>
-          </MyButton>
+
+        <div v-else>
+          <div class="mb-6">
+            <label
+              for="username"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <MyTextField
+              type="text"
+              id="username"
+              v-model="username"
+              placeholder="Enter your email"
+              :error-message="usernameError"
+            />
+          </div>
+          <div class="mb-6">
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <MyTextField
+              type="password"
+              id="password"
+              v-model="password"
+              placeholder="Enter your password"
+              :error-message="passwordError"
+            />
+          </div>
+          <div class="flex justify-end items-center mb-6">
+            <router-link
+              to="/forgot-password"
+              class="text-sm-semibold text-purple-600 hover:underline"
+            >
+              Forgot password
+            </router-link>
+          </div>
+          <div class="flex justify-center">
+            <MyButton
+              expanded=""
+              class="w-full py-3 rounded-lg"
+              color="primary"
+              variant="filled"
+              :disabled="isLoading"
+              @click="onSubmit"
+            >
+              <p class="text-md-semibold">Sign in</p>
+            </MyButton>
+          </div>
         </div>
       </form>
     </section>

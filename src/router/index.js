@@ -10,6 +10,8 @@ import ScanUser from "../views/User/scan/provide.vue";
 import Complaint from "../views/User/scan/complaint/provide.vue";
 import History from "../views/User/scan/history/provide.vue";
 import Scan from "../views/Task/scan.vue";
+import NotMatch from "../views/Task/notMatch.vue";
+import FormTechnician from "../views/Task/formTechnician.vue";
 // import Detail from "../views/User/scan/history/detail/detailHistory.vue";
 
 // Definisi Rute
@@ -17,7 +19,7 @@ const routes = [
   {
     path: "/",
     redirect: () =>
-      VueCookies.get("tokenMonitoringMobile") ? "/dashboard" : "/login", // Redirect berdasarkan token
+      VueCookies.get("tokenMonitoringMobile") ? "/task" : "/login", // Redirect berdasarkan token
   },
   {
     path: "/login",
@@ -38,7 +40,12 @@ const routes = [
     children: [
       { path: "", component: Index },
       { path: ":id", component: TaskDetail },
-      { path: "scan/:id", component: Scan },
+      {
+        path: "scan/:id",
+        component: Scan,
+      },
+      { path: "scan/:id/not-match", component: NotMatch },
+      { path: "scan/:id/work-submission", component: FormTechnician },
     ],
   },
   {

@@ -79,9 +79,8 @@ watchEffect(async () => {
     const data = await checkRoom(uuid, currentResult); // Directly await the promise
     console.log("Room check successful:", data);
     if (data === "success") {
-      router.push(`${window.location.pathname}/work-submission`);
+      // router.push(`/scanned-item-effect/${encodeURIComponent(currentResult)}`);
     } else {
-      router.push(`${window.location.pathname}/not-match`);
     }
   }
 });
@@ -89,60 +88,22 @@ watchEffect(async () => {
 
 <template>
   <simplebar class="h-full" forceVisible="y" autoHide="{false}">
-    <div class="bg-white">
-      <div class="flex flex-rows gap-3">
-        <button
+    <div class="bg-white items-center pt-[25dvh]">
+      <div class="flex flex-col gap-4 justify-center items-center">
+        <p class="display-md-semibold text-gray/900">oops!!</p>
+        <p class="text-md-regular text-gray/600">
+          Sorry, you scanned the wrong room
+        </p>
+        <MyButton
+          class="py-2 px-4 rounded-lg"
+          color="primary"
+          variant="filled"
+          size="sm"
           @click="router.go(-1)"
-          class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          aria-label="Kembali ke daftar task"
         >
-          <ChevronLeft class="h-6 w-6 text-gray-700" />
-        </button>
-        <div class="flex flex-col">
-          <p class="text-lg-semibold text-gray/900">Scan QR Code</p>
-          <p class="text-sm-regular text-gray/600 pb-2">
-            Scan qr code in the room of the task
-          </p>
-        </div>
-        <hr class="py-1" />
-      </div>
-      <div class="flex flex-col gap-4">
-        <div class="scanner-container">
-          <video
-            ref="video"
-            class="camera-feed"
-            muted
-            autoplay
-            playsinline
-          ></video>
-          <div class="result" v-if="result">Result: {{ result }}</div>
-        </div>
+          <p class="text-sm-semibold">Scan again</p>
+        </MyButton>
       </div>
     </div>
   </simplebar>
 </template>
-
-<style scoped>
-.scanner-container {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  background-color: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-}
-.camera-feed {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.result {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  background: white;
-  padding: 8px 8px;
-  border-radius: 8px;
-  font-weight: bold;
-}
-</style>
