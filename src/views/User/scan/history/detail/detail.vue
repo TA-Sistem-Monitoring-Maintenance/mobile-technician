@@ -90,13 +90,16 @@ const taskDetail = computed(() => {
       value: detailTask?.value?.asset?.name || "-",
     },
     {
+      label: "Description",
+      value: detailTask?.value?.description || "-",
+    },
+    {
       label: "Category",
       value: detailTask?.value?.asset?.room?.category?.name || "-",
     },
     {
-      label: "Schedule at",
-      value:
-        moment(detailTask?.value.created_at).format("DD/M/YY HH:mm")
+      label: "Created at",
+      value: moment(detailTask?.value.created_at).format("DD/M/YY HH:mm"),
     },
   ];
 });
@@ -348,26 +351,30 @@ watchEffect(() => {});
               />
             </svg>
           </template>
-
           <template #title> Maintenance </template>
-
-          <template #actions>
-            <MyButton
-              color="primary"
-              variant="filled"
-              class="flex justify-start"
-              @click="isModalOpen = true"
+          <!-- contoh render detail list -->
+          <template v-slot:default>
+            <div
+              v-for="(item, index) in taskDetail"
+              :key="index"
+              class="detail-row"
             >
-              <p class="text-md-semibold">Decline</p>
-            </MyButton>
-            <MyButton
-              color="success"
-              variant="filled"
-              class="flex justify-end"
-              @click="handleApproveSubmit"
-            >
-              <p class="text-md-semibold">Approve</p>
-            </MyButton>
+              <strong>{{ item.label }}:</strong>
+              <span v-if="item.isImage">
+                <img
+                  :src="item.value"
+                  alt="Evidence Photo"
+                  style="
+                    max-width: 200px;
+                    max-height: 150px;
+                    object-fit: contain;
+                  "
+                />
+              </span>
+              <span v-else>
+                {{ item.value }}
+              </span>
+            </div>
           </template>
         </MaintenanceCard>
       </div>

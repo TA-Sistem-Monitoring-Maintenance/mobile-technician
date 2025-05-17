@@ -22,12 +22,15 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
-import MyDropzone from "../../../../components/Dropzone/MyDropzone.vue";
+import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 import { Service } from "./service";
 import { useRoute } from "vue-router";
 const route = useRoute();
 const selectedRoom = ref(null);
+console.log("selectedRoom", selectedRoom);
 const selectedLocation = ref(null);
+
+const { searchAsset, handleSubmit, dropzoneRef, asset, reason } = inject("roomsContext", {});
 
 const handleChangePage = async (newPage) => {
   params.page = newPage;
@@ -63,8 +66,6 @@ watchEffect(async () => {
     console.error("Gagal mengambil data room", error);
   }
 });
-
-
 </script>
 
 <template>
@@ -134,8 +135,12 @@ watchEffect(async () => {
           </label>
           <MyAsyncDropdown
             class="w-full"
-            name="Equipment"
+            name="Asset"
             :placeholder="'Select Equipment'"
+            v-model="asset"
+            :extraData="selectedRoom?.id"
+            :asyncFunction="searchAsset"
+            :getOptionLabel="(tag) => tag?.name"
           />
         </div>
         <div class="flex flex-col gap-2">
@@ -146,6 +151,7 @@ watchEffect(async () => {
           </label>
           <MyTextArea
             placeholder="Enter a reason..."
+            v-model="reason"
             :errorMessage="error"
             :helperText="error"
             :maxLength="500"
@@ -153,16 +159,24 @@ watchEffect(async () => {
         </div>
         <div class="flex flex-col gap-2">
           <MyDropzone
-            :errorMessage="error"
-            :helperText="error"
-            :maxLength="500"
-          ></MyDropzone>
+            ref="dropzoneRef"
+            :multiple="true"
+            :accept="['image/jpeg', 'image/png', 'image/jpg']"
+            :maxSize="2500000"
+            :showImage="true"
+          />
         </div>
         <div class="flex justify-end gap-2">
           <MyButton color="secondary" variant="outlined" size="md">
             <p class="text-sm-semibold">History</p>
           </MyButton>
-          <MyButton type="submit" color="primary" variant="filled" size="md">
+          <MyButton
+            type="submit"
+            color="primary"
+            variant="filled"
+            size="md"
+            @click="handleSubmit"
+          >
             <p class="text-sm-semibold">Send</p>
           </MyButton>
         </div>
