@@ -8,6 +8,11 @@ import Index from "./index.vue";
 import { debounce } from "lodash";
 import { Service } from "./service";
 import MyToaster from "@components/Toaster/MyToaster";
+const asset = ref(null);
+const reason = ref("");
+const dropzoneRef = ref(null);
+const selectedRoom = ref(null);
+const selectedLocation = ref(null);
 
 const rooms = ref({});
 const currentSlider = ref({
@@ -132,7 +137,44 @@ const getDetail = async (body) => {
     })
     .catch(MyToaster);
 };
+const handleSubmit = async () => {
+  if (!asset.value?.id) {
+    return MyToaster({ type: "error", message: "Please select an asset" });
+  }
 
+  if (!reason.value) {
+    return MyToaster({ type: "error", message: "Please provide a reason" });
+  }
+
+  const files = dropzoneRef.value?.getFiles?.() || [];
+  if (files.length === 0) {
+    return MyToaster({ type: "error", message: "Evidence is required" });
+  }
+
+  const formData = new FormData();
+  formData.append("asset_id", asset.value.id);
+  formData.append("room_id", selectedRoom.value?.id || "");
+  formData.append("location_id", selectedLocation.value?.id || "");
+  formData.append("description", reason.value); // FIXED field name
+
+  for (const file of files) {
+    formData.append("evidence", file);
+  }
+
+  try {
+    const res = await Service.submitComplaint(formData);
+    MyToaster({ type: "success", message: "Complaint submitted successfully" });
+  } catch (err) {
+    console.error("Failed to submit complaint", err);
+    MyToaster(
+      err?.response?.data || { type: "error", message: "Submit failed" }
+    );
+  }
+};
+
+const searchAsset = async (query) => {
+  return Service.searchAsset(query);
+};
 const checkRoom = async (id, body) => {
   const formData = new FormData();
   formData.append("room_id", body);
@@ -158,22 +200,29 @@ watch(
 
 provide("roomsContext", {
   getRooms,
+  selectedRoom,
+  selectedLocation,
   rooms,
   currentSlider,
   handleCurrentSlider,
+  handleSubmit,
+  asset,
+  reason,
+  dropzoneRef,
   createRoom,
   params,
   handleCurrentModal,
   currentModal,
   check,
   searchGrade,
-  searchRoom,
-  searchLocation: Service.searchLocation,
+  searchAsset: Service.searchAsset,
   searchCategory: Service.searchCategory,
   downloadTemplateImport,
   deleteRoom,
   checkRoom,
   updateRoom,
+  searchRoom,
+  searchAsset,
   getDetail,
   detailTask,
   showComplaintRoom: Service.showComplaintRoom,
