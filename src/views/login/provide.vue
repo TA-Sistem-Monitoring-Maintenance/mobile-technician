@@ -1,21 +1,26 @@
 <script setup>
-import { provide, ref, computed } from "vue";
-import axios from "axios";
-import CryptoJS from "crypto-js";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import VueCookies from "vue-cookies";
-import Index from "./index.vue"; // Assuming you're using Index.vue for login form
+import { handleLogin } from "./store.js";
+import MyButton from "@components/Button/MyButton.vue";
+import MyTextField from "@components/TextField/MyTextField.vue";
+import { loginSchema, signupSchema } from "./schema.js";
+import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
+import { Check } from "untitledui-js/vue"; // Assuming you're using an icon component for checkmarks
+import MyToaster from "@components/Toaster/MyToaster"; // Assuming you have a toaster component for messages
 
-// For both Login and Sign-Up
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref(""); // for password confirmation (only for signup)
-const name = ref(""); // For sign-up: User's name
+// Define form fields and errors
+const username = ref(null); // Set default to null
+const password = ref(null); // Set default to null
+const confirmPassword = ref(null); // for password confirmation (only for signup)
+const name = ref(""); // for signup name field
 const usernameError = ref("");
 const passwordError = ref("");
-const nameError = ref(""); // For sign-up error
+const nameError = ref(""); // for signup name error
+const confirmPasswordError = ref(""); // for signup confirm password error
 const isLoading = ref(false);
-const isSignup = ref(false); // Toggle between login and signup
+const isSignup = ref(false); // toggle between login and signup
+const successMessage = ref(""); // success message after signup
 
 // Password validation checks
 const isLongEnough = computed(
@@ -33,95 +38,124 @@ const passwordsMatch = computed(
 
 const router = useRouter();
 
-// Handle login
-async function handleLogin() {
+// Handle submit
+const onSubmit = async () => {
+  usernameError.value = "";
+  passwordError.value = "";
+  nameError.value = "";
+  confirmPasswordError.value = "";
+  isLoading.value = true;
+  successMessage.value = ""; // Reset success message
+
   try {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      password.value,
-      import.meta.env.VITE_APP_SECRET_KEY
-    ).toString();
-
-    // Prepare form data
-    const formData = new FormData();
-    formData.append("email", email.value);
-    formData.append("password", encryptedPassword);
-
-    // Get the timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // Send the request to the backend
-    const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/auth/",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Time-Zone": timeZone,
+    if (isSignup.value) {
+      // Handle signup
+      await signupSchema.validate(
+        {
+          name: name.value,
+          username: username.value,
+          password: password.value,
         },
-      }
-    );
+        { abortEarly: false }
+      );
 
-    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
-    router.push("/task");
+      // Handle sign-up request
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        password.value,
+        import.meta.env.VITE_APP_SECRET_KEY
+      ).toString();
+
+      const formData = new FormData();
+      formData.append("name", name.value);
+      formData.append("email", username.value);
+      formData.append("password", encryptedPassword);
+
+      const response = await axios.post(
+        "http://localhost:3000/monitoring/v1/mobile/auth/register", // Correct endpoint
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Time-Zone": timeZone,
+          },
+        }
+      );
+
+      // Show success toaster
+      MyToaster({
+        message: "Registration successful! You can now log in.",
+        type: "success",
+      });
+
+      // Reset fields after successful signup
+      name.value = "";
+      username.value = null;
+      password.value = null;
+      confirmPassword.value = null;
+
+      // Switch to login form after signup
+      isSignup.value = false;
+    } else {
+      // Handle login
+      await loginSchema.validate(
+        { username: username.value, password: password.value },
+        { abortEarly: false }
+      );
+      await handleLogin({
+        username: username.value,
+        password: password.value,
+        router,
+      });
+    }
   } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
+    if (error.inner) {
+      error.inner.forEach((err) => {
+        if (err.path === "username") {
+          usernameError.value = err.message;
+        } else if (err.path === "password") {
+          passwordError.value = err.message;
+        } else if (err.path === "name") {
+          nameError.value = err.message;
+        } else if (err.path === "confirmPassword") {
+          confirmPasswordError.value = err.message;
+        }
+      });
+    }
+
+    // Use toaster for error message
+    MyToaster({
+      message: "An error occurred. Please try again.",
+      type: "error",
+    });
+  } finally {
+    isLoading.value = false;
   }
-}
+};
 
-// Handle sign-up
-async function handleSignUp() {
-  try {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      password.value,
-      import.meta.env.VITE_APP_SECRET_KEY
-    ).toString();
+// Function to toggle between Login and Sign Up forms
+const toggleForm = (formType) => {
+  isSignup.value = formType === "signup";
+};
 
-    // Prepare form data
-    const formData = new FormData();
-    formData.append("email", email.value);
-    formData.append("password", encryptedPassword);
-    formData.append("name", name.value); // Send user's name
-
-    // Get the timezone
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // Send the request to the backend
-    const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/auth/signup", // Adjust your URL for sign-up
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Time-Zone": timeZone,
-        },
-      }
-    );
-
-    // Handle successful sign-up
-    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
-    router.push("/welcome"); // Redirect to a different route on success
-  } catch (error) {
-    console.error("Sign-Up failed:", error.response?.data || error.message);
+// Watch for changes to isSignup and clear the form fields
+watch(isSignup, (newValue) => {
+  if (!newValue) {
+    // If switching to login, reset the fields
+    username.value = null;
+    password.value = null;
+    confirmPassword.value = null;
+    name.value = "";
+    usernameError.value = "";
+    passwordError.value = "";
+    nameError.value = "";
+    confirmPasswordError.value = "";
   }
-}
+});
 
-// Provide login and signup functionality and data to child components
-provide("auth", {
-  email,
-  password,
-  confirmPassword,
-  name,
-  isSignup,
-  isLongEnough,
-  hasSpecialChar,
-  passwordsMatch,
-  handleLogin,
-  handleSignUp,
+// Reset email and password to null when the component is mounted
+onMounted(() => {
+  username.value = null; // Set email to null on mount
+  password.value = null; // Set password to null on mount
+  confirmPassword.value = null; // Set confirm password to null on mount
 });
 </script>
-
-<template>
-  <div>
-    <Index />
-  </div>
-</template>

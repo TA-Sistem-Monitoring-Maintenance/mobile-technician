@@ -7,6 +7,7 @@ import MyTextField from "@components/TextField/MyTextField.vue";
 import { loginSchema, signupSchema } from "./schema.js";
 import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 import { Check } from "untitledui-js/vue"; // Assuming you're using an icon component for checkmarks
+import MyToaster from "@components/Toaster/MyToaster"; // Assuming you have a toaster component for messages
 
 // Define form fields and errors
 const username = ref(null); // Set default to null
@@ -33,7 +34,7 @@ const passwordsMatch = computed(
     confirmPassword.value &&
     password.value === confirmPassword.value
 );
-console .log("passwordsMatch", confirmPassword.value);
+
 const router = useRouter();
 
 // Handle submit
@@ -55,7 +56,20 @@ const onSubmit = async () => {
         },
         { abortEarly: false }
       );
-      // Call your signup method here (handleSignup)
+      // Simulate a successful signup process
+      MyToaster({
+        message: "Registration successful! You can now log in.",
+        type: "success",
+      });
+
+      // Reset fields after successful signup
+      name.value = "";
+      username.value = null;
+      password.value = null;
+      confirmPassword.value = null;
+
+      // Switch to login form after signup
+      isSignup.value = false;
     } else {
       // Handle login
       await loginSchema.validate(
@@ -82,6 +96,11 @@ const onSubmit = async () => {
         }
       });
     }
+    // Use toaster for error message
+    MyToaster({
+      message: "An error occurred. Please try again.",
+      type: "error",
+    });
   } finally {
     isLoading.value = false;
   }
@@ -286,7 +305,10 @@ onMounted(() => {
             color="primary"
             variant="filled"
             :disabled="
-              isLoading || !isLongEnough || !hasSpecialChar || !passwordsMatch
+              isLoading ||
+              (isSignup
+                ? !isLongEnough || !hasSpecialChar || !passwordsMatch
+                : !username || !password)
             "
             type="submit"
           >
