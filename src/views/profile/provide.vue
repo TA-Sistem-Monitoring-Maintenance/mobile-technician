@@ -23,7 +23,7 @@ console.log(base_url);
 
 async function showProfile() {
   try {
-    const token = VueCookies.get("tokenMonitoring");
+    const token = VueCookies.get("tokenMonitoringMobile");
     console.log(token);
     const response = await axios.get(
       `${import.meta.env.VITE_APP_BASE_URL}/auth/show`,
@@ -43,7 +43,7 @@ async function showProfile() {
 
 async function updateProfile(data) {
   try {
-    const token = VueCookies.get("tokenMonitoring");
+    const token = VueCookies.get("tokenMonitoringMobile");
     const response = await axios.put(
       `${import.meta.env.VITE_APP_BASE_URL}/auth/update`,
       data,
@@ -64,7 +64,7 @@ async function updateProfile(data) {
 }
 
 function logout() {
-  VueCookies.remove("tokenMonitoring"); // Remove token from storage
+  VueCookies.remove("tokenMonitoringMobile"); // Remove token from storage
   router.push("/login"); // Redirect to login
 }
 

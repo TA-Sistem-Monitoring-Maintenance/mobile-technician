@@ -26,16 +26,16 @@ export const setCookie = (key, value, expiryHours) => {
 };
 
 const logout = () => {
-  const token = getCookie("tokenMonitoring");
+  const token = getCookie("tokenMonitoringMobile");
   if (!token) return;
-  setCookie("tokenMonitoring", null, -1);
+  setCookie("tokenMonitoringMobile", null, -1);
   window.location.href = "/login";
 };
 
 const getHeader = (type = "json") => {
   const timezone = moment.tz.guess();
   let headers = {
-    Authorization: `Bearer ${getCookie("tokenMonitoring")}`,
+    Authorization: `Bearer ${getCookie("tokenMonitoringMobile")}`,
   };
 
   if (type === "json") {
@@ -120,7 +120,7 @@ export const remove = async (endpoint, data, timeout = 60000) => {
 };
 
 export const download = (endpoint, params) => {
-  let url = `${baseURL}${endpoint}?token=${getCookie("tokenMonitoring")}`;
+  let url = `${baseURL}${endpoint}?token=${getCookie("tokenMonitoringMobile")}`;
   if (params) {
     Object.keys(params).forEach((key) => {
       url += `&${key}=${params[key] ?? ""}`;
