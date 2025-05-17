@@ -90,7 +90,7 @@ const router = useRouter();
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
-                  if (value?.status === 'Waiting technician approval') {
+                  if (value?.status === 'scheduled') {
                     router.push(`/task/scan/${value.id}`);
                   } else {
                     router.push(`/task/${value.id}`);
