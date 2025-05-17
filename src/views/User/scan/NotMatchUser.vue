@@ -12,7 +12,7 @@ const router = useRouter();
       <div class="flex flex-col gap-4 justify-center items-center">
         <p class="display-md-semibold text-gray/900">Oops!!</p>
         <p class="text-md-regular text-gray/600">
-            Sorry, the room you scanned is not available
+            Sorry, the room you scanned is not available.
         </p>
         <MyButton
           class="py-2 px-4 rounded-lg"

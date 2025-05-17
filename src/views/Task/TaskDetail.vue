@@ -24,7 +24,12 @@ import { useRouter } from "vue-router";
 // import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
 
-const { params, getDetail, detailTask } = inject("roomsContext", {});
+const roomsContext = inject("roomsContext", null);
+if (!roomsContext) {
+  throw new Error("roomsContext is not provided!");
+}
+const { getDetail, detailTask, params } = roomsContext;
+
 const tableData = ref([]);
 const router = useRouter();
 

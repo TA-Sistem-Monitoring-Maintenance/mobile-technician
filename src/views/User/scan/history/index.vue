@@ -55,6 +55,7 @@ watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
 console.log(check);
+
 </script>
 
 <template>

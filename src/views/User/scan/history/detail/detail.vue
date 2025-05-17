@@ -21,7 +21,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import { useRouter, useRoute } from "vue-router";
-// import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
+import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
 import { defineProps } from "vue";
 
@@ -57,12 +57,18 @@ const props = defineProps({
 const { params, getDetail, detailTask } = inject("roomsContext", {});
 const router = useRouter();
 const route = useRoute();
-const uuid = route.params.id;
 
 onMounted(async () => {
-  const uuid = route.params.id;
+  console.log("jalan");
+  const id = window.location.pathname;
+  const parts = id.split("/");
+  const uuid = parts[parts.length - 1];
+  console.log("jalan", uuid);
+  console.log("Detail Task", detailTask?.value);
   try {
     await getDetail(uuid);
+    console.log("Detail Task after fetch:", detailTask.value);
+    console.log(detailTask?.value);
   } catch (error) {
     console.error("Failed to fetch rooms:", error);
   }
@@ -70,37 +76,29 @@ onMounted(async () => {
 
 
 const taskDetail = computed(() => {
-  const ticket = detailTask?.value?.ticket;
-
-  if (!ticket) return [];
 
   return [
-    { label: "ID", value: ticket.id || "-" },
-    { label: "Status", value: ticket.status || "-" },
+  { label: "ID", value: detailTask?.value.id || "-" },
+    { label: "Status", value: detailTask?.value.status || "-" },
     {
       label: "Room",
-      value: ticket?.asset?.room?.name || "-",
+      value: detailTask?.value?.ticket?.asset?.room?.name || "-",
     },
     {
       label: "Location",
-      value: ticket?.asset?.room?.location?.name || "-",
+      value: detailTask?.value.ticket?.asset?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
-      value: ticket?.asset?.name || "-",
+      value: detailTask?.value?.ticket?.asset?.name || "-",
     },
-    { label: "Category", value: ticket.type || "-" },
+    { label: "Category", value: detailTask?.value?.ticket?.type || "-" },
     {
       label: "Schedule at",
-      value: ticket.schedule_id
-        ? moment(ticket.schedule?.start_time).format("DD/M/YY HH:mm") +
-          " - " +
-          moment(ticket.schedule?.end_time).format("DD/M/YY HH:mm")
-        : "-",
-    },
-    {
-      label: "Description",
-      value: ticket.description || "-",
+      value:
+        moment(detailTask?.value.schedule?.start_time).format("DD/M/YY HH:mm") +
+        " - " +
+        moment(detailTask?.value.schedule?.end_time).format("DD/M/YY HH:mm"),
     },
   ];
 });

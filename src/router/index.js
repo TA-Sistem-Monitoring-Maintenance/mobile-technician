@@ -9,7 +9,7 @@ import Index from "../views/Task/index.vue";
 import ScanUser from "../views/User/scan/provide.vue";
 import Complaint from "../views/User/scan/complaint/provide.vue";
 import History from "../views/User/scan/history/provide.vue";
-import DetailHistory from "../views/User/scan/history/detail/detail.vue";
+import DetailHistory from "../views/User/scan/history/detail/provide.vue";
 import Profile from "../views/profile/provide.vue";
 import NotMatchUser from "../views/User/scan/NotMatchUser.vue";
 import Scan from "../views/Task/scan.vue";
