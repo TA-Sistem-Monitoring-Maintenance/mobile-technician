@@ -20,6 +20,9 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const {
   getTask = () => Promise.resolve(),
@@ -52,6 +55,7 @@ watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
 console.log(check);
+
 </script>
 
 <template>
@@ -78,7 +82,7 @@ console.log(check);
       <div class="pb-3 gap-3">
         <p class="text-lg-semibold text-gray/900">History</p>
         <p class="text-sm-regular text-gray/600 pb-2">
-            List of complaint history submitted 
+          List of complaint history submitted
         </p>
         <hr class="py-1" />
       </div>
@@ -106,6 +110,7 @@ console.log(check);
               :onClick="
                 (value) => {
                   console.log('Clicked Row:', value);
+                  router.push(`/history/detail/${value.id}`);
                 }
               "
               @selectionChange="
@@ -129,7 +134,9 @@ console.log(check);
                     {{ rowData.asset?.room?.location?.name }}
                   </p>
                 </MyColumn>
-                <MyColumn :rowData="rowData"> {{ rowData.asset?.name }}</MyColumn>
+                <MyColumn :rowData="rowData">
+                  {{ rowData.asset?.name }}</MyColumn
+                >
                 <MyColumn :rowData="rowData">
                   <MyChip
                     :label="rowData.status"
