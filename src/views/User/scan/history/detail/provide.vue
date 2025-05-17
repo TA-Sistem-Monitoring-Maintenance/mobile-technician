@@ -4,10 +4,11 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import { useRouter } from "vue-router";
 import VueCookies from "vue-cookies";
-import Index from "./index.vue";
+import Index from "./detail.vue";
 import { debounce } from "lodash";
 import { Service } from "./service";
 import MyToaster from "@components/Toaster/MyToaster";
+// import TaskDetail from "./TaskDetail.vue";
 
 const rooms = ref({});
 const currentSlider = ref({
@@ -132,7 +133,7 @@ const getDetail = async (body) => {
     })
     .catch(MyToaster);
 };
-
+console.log("Detail Task", detailTask.value);
 const checkRoom = async (id, body) => {
   const formData = new FormData();
   formData.append("room_id", body);
@@ -140,27 +141,6 @@ const checkRoom = async (id, body) => {
     .then((res) => res.data)
     .catch(MyToaster);
 };
-const checkScannedRoom = async (roomId) => {
-  try {
-    const res = await Service.getRoomInfo(roomId);
-    return res; 
-  } catch (err) {
-    console.error("Error while checking room:", err);
-    return null;
-  }
-};
-
-const checkRoomValidity = async (id) => {
-  try {
-    const res = await Service.getRoomInfo(id);
-    return res?.data ?? null;
-  } catch (e) {
-    console.error("Failed to check room:", e);
-    return null;
-  }
-};
-
-provide("checkRoomValidity", checkRoomValidity);
 
 const deleteRoom = async (data) =>
   await Service.deleteRoom({ ids: data })
@@ -192,13 +172,13 @@ provide("roomsContext", {
   searchLocation: Service.searchLocation,
   searchCategory: Service.searchCategory,
   downloadTemplateImport,
-  checkScannedRoom,
+
   deleteRoom,
   checkRoom,
   updateRoom,
   getDetail,
   detailTask,
-  getRoomInfo: Service.getRoomInfo,
+  detaildata: Service.detaildata,
 });
 </script>
 
@@ -207,8 +187,8 @@ provide("roomsContext", {
     <Index />
   </div>
 </template>
-<!-- 
-<template>
+
+<!-- <template>
   <div>
     <router-view v-slot="{ Component, route }">
       <transition :name="route.meta.transition || 'fade'" mode="out-in">

@@ -20,8 +20,8 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
-import { useRouter } from "vue-router";
-// import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
+import { useRouter, useRoute } from "vue-router";
+import MaintenanceCard from "../../../../../components/Card/MaintenanceCardLokal.vue";
 import moment from "moment-timezone";
 import { defineProps } from "vue";
 
@@ -49,14 +49,13 @@ const props = defineProps({
         description: "Share posts to your social accounts",
         status: "pending",
       },
-      
     ],
   },
 });
 
 const { params, getDetail, detailTask } = inject("roomsContext", {});
-const tableData = ref([]);
 const router = useRouter();
+const route = useRoute();
 
 onMounted(async () => {
   console.log("jalan");
@@ -64,8 +63,10 @@ onMounted(async () => {
   const parts = id.split("/");
   const uuid = parts[parts.length - 1];
   console.log("jalan", uuid);
+  console.log("Detail Task", detailTask?.value);
   try {
     await getDetail(uuid);
+    console.log("Detail Task after fetch:", detailTask.value);
     console.log(detailTask?.value);
   } catch (error) {
     console.error("Failed to fetch rooms:", error);
@@ -78,23 +79,24 @@ const taskDetail = computed(() => {
     { label: "Status", value: detailTask?.value.status || "-" },
     {
       label: "Room",
-      value: detailTask?.value?.ticket?.asset?.room?.name || "-",
+      value: detailTask?.value?.asset?.room?.name || "-",
     },
     {
       label: "Location",
-      value: detailTask?.value.ticket?.asset?.room?.location?.name || "-",
+      value: detailTask?.value?.asset?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
-      value: detailTask?.value?.ticket?.asset?.name || "-",
+      value: detailTask?.value?.asset?.name || "-",
     },
-    { label: "Category", value: detailTask?.value?.ticket?.type || "-" },
+    {
+      label: "Category",
+      value: detailTask?.value?.asset?.room?.category?.name || "-",
+    },
     {
       label: "Schedule at",
       value:
-        moment(detailTask?.value.schedule?.start_time).format("DD/M/YY HH:mm") +
-        " - " +
-        moment(detailTask?.value.schedule?.end_time).format("DD/M/YY HH:mm"),
+        moment(detailTask?.value.created_at).format("DD/M/YY HH:mm")
     },
   ];
 });
@@ -121,7 +123,7 @@ watchEffect(() => {});
         </div>
       </div>
       <hr class="py-1" />
-      <div class="flex justify-center">
+      <div class="flex flex-col">
         <div class="flex flex-col w-full p-4 gap-4">
           <!-- Step 1 -->
           <div

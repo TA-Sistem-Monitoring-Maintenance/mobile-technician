@@ -23,38 +23,48 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "../../../../components/Dropzone/MyDropzone.vue";
-
-const {
-  getRooms = () => Promise.resolve(),
-  rooms,
-  handleCurrentSlider,
-  currentSlider,
-  params,
-  handleCurrentModal,
-  currentModal,
-  check,
-  deleteRoom,
-} = inject("roomsContext", {});
-const tableData = ref([]);
+import { Service } from "./service";
+import { useRoute } from "vue-router";
+const route = useRoute();
+const selectedRoom = ref(null);
+const selectedLocation = ref(null);
 
 const handleChangePage = async (newPage) => {
   params.page = newPage;
   await getRooms();
 };
+const isRoomLoaded = ref(false);
+const presetRoomId = ref(null);
 
-onMounted(async () => {
-  console.log("jalan");
+watchEffect(async () => {
+  if (isRoomLoaded.value) return;
+
+  const roomId = route.query.room_id;
+  if (!roomId) return;
+
+  presetRoomId.value = roomId;
+
   try {
-    await getRooms();
+    const res = await Service.showComplaintRoom(roomId);
+    if (res.data) {
+      selectedRoom.value = {
+        id: res.data.id,
+        name: res.data.name,
+      };
+      selectedLocation.value = res.data.location
+        ? {
+            id: res.data.location.id,
+            name: res.data.location.name,
+          }
+        : null;
+      isRoomLoaded.value = true;
+    }
   } catch (error) {
-    console.error("Failed to fetch rooms:", error);
+    console.error("Gagal mengambil data room", error);
   }
 });
 
-watchEffect(() => {
-  console.log("Current Modal State:", currentModal.value);
-});
-console.log(check);
+
 </script>
 
 <template>
@@ -92,24 +102,28 @@ console.log(check);
           <label
             class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
           >
-            Location
-          </label>
-          <MyAsyncDropdown
-            class="w-full"
-            name="Location"
-            :placeholder="'Select Location'"
-          />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label
-            class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
-          >
             Room
           </label>
           <MyAsyncDropdown
             class="w-full"
             name="Room"
             :placeholder="'Select Room'"
+            v-model="selectedRoom"
+            :disabled="true"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label
+            class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
+          >
+            Location
+          </label>
+          <MyAsyncDropdown
+            class="w-full"
+            name="Location"
+            :placeholder="'Select Location'"
+            v-model="selectedLocation"
+            :disabled="true"
           />
         </div>
         <div class="flex flex-col gap-2">
