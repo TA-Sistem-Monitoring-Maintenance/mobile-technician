@@ -11,7 +11,7 @@ import Complaint from "../views/User/scan/complaint/provide.vue";
 import History from "../views/User/scan/history/provide.vue";
 import DetailHistory from "../views/User/scan/history/detail/detail.vue";
 import Profile from "../views/profile/provide.vue";
-
+import NotMatchUser from "../views/User/scan/NotMatchUser.vue";
 import Scan from "../views/Task/scan.vue";
 import NotMatch from "../views/Task/notMatch.vue";
 import FormTechnician from "../views/Task/formTechnician.vue";
@@ -64,32 +64,28 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/notmatchuser",
+    component: NotMatchUser,
+  },
+  {
     path: "/complaint",
     name: "Complaint",
     component: Complaint,
     meta: { requiresAuth: true },
-  },
-  {
-    path: "/detail",
-    name: "DetailHistory",
-    component: DetailHistory,
-    meta: { requiresAuth: true }  
-  },
+  },  
   {
     path: "/history",
     name: "History",
     component: History,
-    meta: { requiresAuth: true },
-    children: [
-      // {
-      //   path: "detail",
-      //   name: "DetailHistory",
-      //   component: DetailHistory,
-      //   meta: { requiresAuth: true },
-      // },
-    ],
+    meta: { requiresAuth: true }
   },
-
+  {
+    path: "/history/detail/:id",
+    name: "DetailHistory",
+    component: DetailHistory,
+    meta: { requiresAuth: true }
+  }
+  
   // {
   //   path: "/task/:id",
   //   name: "TaskDetail",

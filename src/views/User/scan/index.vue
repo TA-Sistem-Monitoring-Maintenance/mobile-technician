@@ -25,21 +25,47 @@ import { BrowserMultiFormatReader, BrowserCodeReader } from "@zxing/browser";
 import { useRouter } from "vue-router";
 
 let codeReader;
+const router = useRouter();
+const video = ref(null);
+const result = ref("");
+const { checkScannedRoom } = inject("roomsContext", {});
+const hasScanned = ref(false);
+
+const stopScanner = () => {
+  try {
+    // Hentikan ZXing (jika ada)
+    if (codeReader && typeof codeReader.reset === "function") {
+      codeReader.reset();
+      console.log("ZXing scanner stopped");
+    }
+
+    // Hentikan semua stream dari video element
+    if (video.value?.srcObject) {
+      video.value.srcObject.getTracks().forEach((track) => track.stop());
+      video.value.srcObject = null;
+      console.log("Video stream stopped manually");
+    }
+  } catch (err) {
+    console.error("Error stopping scanner:", err);
+  }
+};
 
 onMounted(async () => {
   codeReader = new BrowserMultiFormatReader();
 
   try {
-    const devices = await BrowserCodeReader.listVideoInputDevices(); // ✅ di sini
-
+    const devices = await BrowserCodeReader.listVideoInputDevices();
     const selectedDeviceId = devices[0]?.deviceId;
 
     codeReader.decodeFromVideoDevice(
       selectedDeviceId,
       video.value,
       (res, err) => {
-        if (res) {
-          result.value = res.getText();
+        if (res && !hasScanned.value) {
+          hasScanned.value = true; // ✅ Jangan izinkan scan ulang
+          const scannedId = res.getText();
+          result.value = scannedId;
+          validateRoom(scannedId); // cek dan navigate
         }
         if (
           err &&
@@ -55,36 +81,37 @@ onMounted(async () => {
     console.error("Camera error:", error);
   }
 });
-const router = useRouter();
 
-const video = ref(null);
-const result = ref("");
-
-const { checkRoom } = inject("roomsContext", {});
-const tableData = ref([]);
-
-console.log(result);
-
-// onBeforeUnmount(() => {
-//   codeReader?.reset();
-// });
-watchEffect(async () => {
-  const currentResult = result.value;
-  const id = window.location.pathname;
-  const parts = id.split("/");
-  const uuid = parts[parts.length - 1];
-  if (currentResult) {
-    // Navigates if currentResult is truthy
-    console.log(`Result is "${currentResult}". Navigating via watchEffect...`);
-    const data = await checkRoom(uuid, currentResult); // Directly await the promise
-    console.log("Room check successful:", data);
-    if (data === "success") {
-      router.push(`${window.location.pathname}/work-submission`);
-    } else {
-      router.push(`${window.location.pathname}/not-match`);
-    }
+// Watch perubahan route
+watch(
+  () => router.fullPath,
+  (newPath, oldPath) => {
+    console.log("Navigasi dari", oldPath, "ke", newPath);
+    stopScanner(); // Stop kamera jika pindah halaman
   }
-});
+);
+// Validasi room dan navigasi
+const validateRoom = async (scannedId) => {
+  try {
+    const res = await checkScannedRoom(scannedId);
+    console.log("response dari checkScannedRoom:", res);
+
+    stopScanner(); // ✅ Tambahkan ini sebelum redirect
+
+    if (res?.data) {
+      router.push({
+        path: "/complaint",
+        query: { room_id: res.data.id },
+      });
+    } else {
+      router.push("/notmatchuser");
+    }
+  } catch (err) {
+    stopScanner(); // ✅ Tambahkan ini juga di error
+    router.push("/notmatchuser");
+  }
+};
+
 </script>
 
 <template>
@@ -107,15 +134,17 @@ watchEffect(async () => {
       </div>
       <hr class="py-2" />
       <div class="flex flex-col gap-4">
-        <div class="scanner-container">
-          <video
-            ref="video"
-            class="camera-feed"
-            muted
-            autoplay
-            playsinline
-          ></video>
-          <div class="result" v-if="result">Result: {{ result }}</div>
+        <div class="flex justify-center">
+          <div class="scanner-container">
+            <video
+              ref="video"
+              class="camera-feed"
+              muted
+              autoplay
+              playsinline
+            ></video>
+            <div class="result" v-if="result">Result: {{ result }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -124,7 +153,7 @@ watchEffect(async () => {
 
 <style scoped>
 .scanner-container {
-  width: 100%;
+  width: 80%;
   aspect-ratio: 3 / 4;
   background-color: #000;
   border-radius: 12px;
