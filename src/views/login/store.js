@@ -1,80 +1,95 @@
-import { ref } from "vue";
-import axios from "axios";
-import CryptoJS from "crypto-js";
-import VueCookies from "vue-cookies";
-import { useRouter } from "vue-router";
+// // store.js
+// import { ref } from "vue";
+// import axios from "axios";
+// import CryptoJS from "crypto-js";
+// import VueCookies from "vue-cookies";
+// import MyToaster from "@components/Toaster/MyToaster"; // Pastikan Anda sudah punya komponen MyToaster
 
-// Define form fields
-export const email = ref("");
-export const password = ref("");
+// // Login and SignUp Logic
+// export const email = ref("");
+// export const password = ref("");
 
-const router = useRouter();
+// // Handle Login Function
+// export async function handleLogin(body) {
+//   try {
+//     const encryptedPassword = CryptoJS.AES.encrypt(
+//       body.password,
+//       import.meta.env.VITE_APP_SECRET_KEY
+//     ).toString();
 
-// Handle login function
-export async function handleLogin(body) {
-  try {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      body.password,
-      import.meta.env.VITE_APP_SECRET_KEY
-    ).toString();
+//     // Prepare form data
+//     const formData = new FormData();
+//     formData.append("email", body.username);
+//     formData.append("password", encryptedPassword);
 
-    const formData = new FormData();
-    formData.append("email", body.username);
-    formData.append("password", encryptedPassword);
+//     // Get timezone
+//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//     const response = await axios.post(
+//       "http://localhost:3000/monitoring/v1/auth/",
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//           "Time-Zone": timeZone,
+//         },
+//       }
+//     );
 
-    // Sending the login request
-    const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/auth/", // API URL
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Time-Zone": timeZone,
-        },
-      }
-    );
+//     // Show success message using toaster
+//     MyToaster({
+//       message: "Login successful!",
+//       type: "success",
+//     });
 
-    // Save token and redirect to the task page
-    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
-    router.push("/task");
-  } catch (error) {
-    console.error("Login failed:", error.response?.data || error.message);
-    // Optionally, handle error with toaster or another method
-  }
-}
+//     VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+//     body.router.push("/task");
+//   } catch (error) {
+//     MyToaster({
+//       message: error.response?.data?.message || error.message || "Login failed",
+//       type: "error",
+//     });
+//   }
+// }
 
-// Handle sign-up function
-export async function handleSignUp(body) {
-  try {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      body.password,
-      import.meta.env.VITE_APP_SECRET_KEY
-    ).toString();
+// // Handle SignUp Function
+// export async function handleSignUp(body) {
+//   try {
+//     const encryptedPassword = CryptoJS.AES.encrypt(
+//       body.password,
+//       import.meta.env.VITE_APP_SECRET_KEY
+//     ).toString();
 
-    const formData = new FormData();
-    formData.append("name", body.name); 
-    formData.append("email", body.email);
-    formData.append("password", encryptedPassword);
+//     // Prepare form data
+//     const formData = new FormData();
+//     formData.append("email", body.username);
+//     formData.append("password", encryptedPassword);
+//     formData.append("name", body.name);
 
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/mobile/auth/register", 
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Time-Zone": timeZone,
-        },
-      }
-    );
+//     const response = await axios.post(
+//       "http://localhost:3000/monitoring/v1/mobile/auth/register", // Adjust URL for registration
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//           "Time-Zone": timeZone,
+//         },
+//       }
+//     );
 
-    // Save token after successful registration
-    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
-    router.push("/welcome"); // Redirect to the welcome page after registration
-  } catch (error) {
-    console.error("Sign-Up failed:", error.response?.data || error.message);
-  }
-}
+//     MyToaster({
+//       message: "Registration successful! You can now log in.",
+//       type: "success",
+//     });
+
+//     VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+//     body.router.push("/welcome"); // Redirect on success
+//   } catch (error) {
+//     MyToaster({
+//       message: error.response?.data?.message || error.message || "Sign-Up failed",
+//       type: "error",
+//     });
+//   }
+// }

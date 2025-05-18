@@ -1,18 +1,19 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, provide } from "vue";
 import { useRouter } from "vue-router";
-import { handleLogin } from "./store.js";
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import VueCookies from "vue-cookies";
+import MyToaster from "@components/Toaster/MyToaster"; // Assuming you have a toaster component for messages
 import MyButton from "@components/Button/MyButton.vue";
 import MyTextField from "@components/TextField/MyTextField.vue";
-import { loginSchema, signupSchema } from "./schema.js";
 import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 import { Check } from "untitledui-js/vue"; // Assuming you're using an icon component for checkmarks
-import MyToaster from "@components/Toaster/MyToaster"; // Assuming you have a toaster component for messages
 
 // Define form fields and errors
-const username = ref(null); // Set default to null
-const password = ref(null); // Set default to null
-const confirmPassword = ref(null); // for password confirmation (only for signup)
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
 const name = ref(""); // for signup name field
 const usernameError = ref("");
 const passwordError = ref("");
@@ -37,6 +38,92 @@ const passwordsMatch = computed(
 
 const router = useRouter();
 
+// Handle login
+async function handleLogin() {
+  try {
+    const encryptedPassword = CryptoJS.AES.encrypt(
+      password.value,
+      import.meta.env.VITE_APP_SECRET_KEY
+    ).toString();
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("email", email.value);
+    formData.append("password", encryptedPassword);
+
+    // Get the timezone
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const response = await axios.post(
+      "http://localhost:3000/monitoring/v1/auth/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Time-Zone": timeZone,
+        },
+      }
+    );
+
+    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+    MyToaster({
+      message: "Login successful!",
+      type: "success",
+    });
+    router.push("/task");
+  } catch (error) {
+    MyToaster({
+      message: error.response?.data?.message || error.message || "Login failed",
+      type: "error",
+    });
+    console.error("Login failed:", error.response?.data || error.message);
+  }
+}
+
+// Handle sign-up
+async function handleSignUp() {
+  try {
+    const encryptedPassword = CryptoJS.AES.encrypt(
+      password.value,
+      import.meta.env.VITE_APP_SECRET_KEY
+    ).toString();
+
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("email", email.value);
+    formData.append("password", encryptedPassword);
+    formData.append("name", name.value); // Send user's name
+
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const response = await axios.post(
+      "http://localhost:3000/monitoring/v1/mobile/auth/register", // Adjust your URL for sign-up
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Time-Zone": timeZone,
+        },
+      }
+    );
+
+    MyToaster({
+      message: "Registration successful! You can now log in.",
+      type: "success",
+    });
+
+    VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+    router.push("/login"); // Redirect to login after successful registration
+  } catch (error) {
+    MyToaster({
+      message:
+        error.response?.data?.message || error.message || "Sign-Up failed",
+      type: "error",
+    });
+    console.error("Sign-Up failed:", error.response?.data || error.message);
+  }
+}
+
 // Handle submit
 const onSubmit = async () => {
   usernameError.value = "";
@@ -51,33 +138,36 @@ const onSubmit = async () => {
       await signupSchema.validate(
         {
           name: name.value,
-          username: username.value,
+          username: email.value, // Using email as username
           password: password.value,
         },
         { abortEarly: false }
       );
-      // Simulate a successful signup process
-      MyToaster({
-        message: "Registration successful! You can now log in.",
-        type: "success",
+
+      // Call handleSignUp to trigger the sign-up action
+      await handleSignUp({
+        username: email.value,
+        password: password.value,
+        name: name.value,
+        router,
       });
 
       // Reset fields after successful signup
       name.value = "";
-      username.value = null;
-      password.value = null;
-      confirmPassword.value = null;
+      email.value = "";
+      password.value = "";
+      confirmPassword.value = "";
 
       // Switch to login form after signup
       isSignup.value = false;
     } else {
       // Handle login
       await loginSchema.validate(
-        { username: username.value, password: password.value },
+        { username: email.value, password: password.value },
         { abortEarly: false }
       );
       await handleLogin({
-        username: username.value,
+        username: email.value,
         password: password.value,
         router,
       });
@@ -96,6 +186,7 @@ const onSubmit = async () => {
         }
       });
     }
+
     // Use toaster for error message
     MyToaster({
       message: "An error occurred. Please try again.",
@@ -115,9 +206,9 @@ const toggleForm = (formType) => {
 watch(isSignup, (newValue) => {
   if (!newValue) {
     // If switching to login, reset the fields
-    username.value = null;
-    password.value = null;
-    confirmPassword.value = null;
+    email.value = "";
+    password.value = "";
+    confirmPassword.value = "";
     name.value = "";
     usernameError.value = "";
     passwordError.value = "";
@@ -128,9 +219,25 @@ watch(isSignup, (newValue) => {
 
 // Reset email and password to null when the component is mounted
 onMounted(() => {
-  username.value = null; // Set email to null on mount
-  password.value = null; // Set password to null on mount
-  confirmPassword.value = null; // Set confirm password to null on mount
+  email.value = ""; // Set email to null on mount
+  password.value = ""; // Set password to null on mount
+  confirmPassword.value = ""; // Set confirm password to null on mount
+});
+
+// Provide login and signup functionality and data to child components
+provide("auth", {
+  email,
+  password,
+  confirmPassword,
+  name,
+  isSignup,
+  isLongEnough,
+  hasSpecialChar,
+  passwordsMatch,
+  handleLogin,
+  handleSignUp,
+  onSubmit,
+  toggleForm,
 });
 </script>
 
@@ -191,7 +298,7 @@ onMounted(() => {
           <MyTextField
             type="email"
             id="username"
-            v-model="username"
+            v-model="email"
             placeholder="Enter your email"
             :error-message="usernameError"
           />
@@ -232,19 +339,8 @@ onMounted(() => {
             <Check
               :size="20"
               :color="isLongEnough ? 'green' : 'currentColor'"
-              :class="[
-                'rounded-full p-[3px]',
-                isLongEnough
-                  ? 'bg-green-100 text-green-500'
-                  : 'bg-gray/200 text-gray/400',
-              ]"
             />
-            <p
-              :class="[
-                'text-sm-regular',
-                isLongEnough ? 'text-green-600' : 'text-gray-500',
-              ]"
-            >
+            <p :class="[isLongEnough ? 'text-green-600' : 'text-gray-500']">
               Must be at least 8 characters
             </p>
           </div>
@@ -252,19 +348,8 @@ onMounted(() => {
             <Check
               :size="20"
               :color="hasSpecialChar ? 'green' : 'currentColor'"
-              :class="[
-                'rounded-full p-[3px]',
-                hasSpecialChar
-                  ? 'bg-green-100 text-green-500'
-                  : 'bg-gray/200 text-gray/400',
-              ]"
             />
-            <p
-              :class="[
-                'text-sm-regular',
-                hasSpecialChar ? 'text-green-600' : 'text-gray-500',
-              ]"
-            >
+            <p :class="[hasSpecialChar ? 'text-green-600' : 'text-gray-500']">
               Must contain one special character
             </p>
           </div>
@@ -272,19 +357,8 @@ onMounted(() => {
             <Check
               :size="20"
               :color="passwordsMatch ? 'green' : 'currentColor'"
-              :class="[
-                'rounded-full p-[3px]',
-                passwordsMatch
-                  ? 'bg-green-100 text-green-500'
-                  : 'bg-gray/200 text-gray/400',
-              ]"
             />
-            <p
-              :class="[
-                'text-sm-regular',
-                passwordsMatch ? 'text-green-600' : 'text-gray-500',
-              ]"
-            >
+            <p :class="[passwordsMatch ? 'text-green-600' : 'text-gray-500']">
               Passwords match
             </p>
           </div>
@@ -308,7 +382,7 @@ onMounted(() => {
               isLoading ||
               (isSignup
                 ? !isLongEnough || !hasSpecialChar || !passwordsMatch
-                : !username || !password)
+                : !email || !password)
             "
             type="submit"
           >

@@ -22,7 +22,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
-import MyDropzone from "../../components/Dropzone/MyDropzone.vue";
+import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 
 const {
   getRooms = () => Promise.resolve(),
