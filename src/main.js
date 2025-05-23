@@ -15,6 +15,8 @@ import "vuetify/styles"; // Import Vuetify styles globally
 
 import PrimeVue from "primevue/config";
 import AutoComplete from "primevue/autocomplete";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 import VueCookies from "vue-cookies";
 

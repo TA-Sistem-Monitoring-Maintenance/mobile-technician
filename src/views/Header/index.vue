@@ -23,12 +23,11 @@
   </nav>
   <hr />
 
-  <!-- Teleport the dropdown to <body> so nothing can clip it -->
   <Teleport to="body">
     <div
       v-if="isDropdownOpen"
       ref="dropdownMenuRef"
-      class="bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5"
+      class="bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 p-3"
       style="z-index: 9999"
       role="menu"
       aria-orientation="vertical"
@@ -40,6 +39,14 @@
         role="menuitem"
       >
         Profile
+      </a>
+      <a
+        href="#"
+        @click.prevent="goToAvailability"
+        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        role="menuitem"
+      >
+        Availability
       </a>
       <a
         href="#"
@@ -112,6 +119,11 @@ function toggleDropdown() {
 
 function goToProfile() {
   router.push("/profile");
+  isDropdownOpen.value = false;
+}
+
+function goToAvailability() {
+  router.push("/availability");
   isDropdownOpen.value = false;
 }
 

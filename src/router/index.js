@@ -16,6 +16,7 @@ import Scan from "../views/Task/scan.vue";
 import NotMatch from "../views/Task/notMatch.vue";
 import FormTechnician from "../views/Task/formTechnician.vue";
 // import Detail from "../views/User/scan/history/detail/detailHistory.vue";
+import Availability from "../views/availability/provide.vue";
 
 // Definisi Rute
 const routes = [
@@ -34,13 +35,19 @@ const routes = [
     path: "/forgot-password",
     name: "ForgotPassword",
     component: ForgotPassword,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: "/profile",
     name: "Profile",
     component: Profile,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/availability",
+    name: "Availability",
+    component: Availability,
+    meta: { requiresAuth: true },
   },
   {
     path: "/task",
@@ -72,20 +79,20 @@ const routes = [
     name: "Complaint",
     component: Complaint,
     meta: { requiresAuth: true },
-  },  
+  },
   {
     path: "/history",
     name: "History",
     component: History,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/history/detail/:id",
     name: "DetailHistory",
     component: DetailHistory,
-    meta: { requiresAuth: true }
-  }
-  
+    meta: { requiresAuth: true },
+  },
+
   // {
   //   path: "/task/:id",
   //   name: "TaskDetail",
