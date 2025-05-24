@@ -7,50 +7,89 @@ import MyButton from "@components/Button/MyButton.vue";
 import { mdiMagnify, mdiPlus, mdiUpload } from "@mdi/js";
 import MyTextField from "@components/TextField/MyTextField.vue";
 import MyModalSlider from "@components/Slider/MyModalSlider.vue";
-// import formSlider from "./sliders/formSlider.vue";
 import { debounce } from "lodash";
 import MyModal from "@components/Modal/MyModal.vue";
 import { watchEffect } from "vue";
 import MyChip from "@components/Chip/MyChip.vue";
-
 import simplebar from "simplebar-vue";
-import { ChevronLeft, SearchLg, Trash01 } from "untitledui-js/vue";
+import { ChevronLeft, SearchLg, Trash01, FilterLines } from "untitledui-js/vue";
 import MyButtonGroupV3 from "@components/Button/MyButtonGroupV3.vue";
 import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
-// import DetailSlider from "./sliders/detailSlider.vue";
-// import importSlider from "./sliders/importSlider.vue";
-import { FilterLines } from "untitledui-js/vue";
 import { useRouter, useRoute } from "vue-router";
 import MaintenanceCard from "../../../../../components/Card/MaintenanceCardLokal.vue";
 import moment from "moment-timezone";
 import { defineProps } from "vue";
 
-const props = defineProps({
-  steps: {
-    type: Array,
-    default: () => [
-      {
-        title: "Complaint Submission",
-        description: "Please provide your name and email",
-        status: "completed",
+const dynamicSteps = computed(() => {
+  const status = detailTask?.value?.status || "";
+  const approvalReason = detailTask?.value?.approval_reason || "";
+
+  const allSteps = {
+    base: {
+      pending: {
+        title: "Pending",
+        description: "Waiting for admin approval",
       },
-      {
-        title: "Admin approved",
-        description: "A few details about your company",
-        status: "completed",
+      adminRejected: {
+        title: "Admin rejected",
+        // description nanti diisi dinamis
       },
-      {
-        title: "Being worked on by technician",
-        description: "Start collaborating with your team",
-        status: "current",
+      waitingTechnician: {
+        title: "Waiting for technician approval",
+        description: "Approved by admin, waiting for technician",
       },
-      {
-        title: "Finished",
-        description: "Share posts to your social accounts",
-        status: "pending",
+      technicianRejected: {
+        title: "Technician rejected",
+        // description nanti diisi dinamis
       },
-    ],
-  },
+      scheduled: {
+        title: "Scheduled",
+        description: "Task scheduled for technician",
+      },
+      finish: {
+        title: "Finish",
+        description: "Maintenance task completed",
+      },
+    },
+  };
+
+  const steps = [];
+
+  steps.push({ ...allSteps.base.pending, status: "completed" });
+
+  if (status === "Rejected") {
+    // Ini asumsinya reject oleh admin
+    steps.push({ 
+      ...allSteps.base.adminRejected, 
+      description: approvalReason || "Task rejected by Admin",
+      status: "current" 
+    });
+    return steps;
+  }
+
+  steps.push({ ...allSteps.base.waitingTechnician, status: "completed" });
+
+  if (status === "technician_rejected") {
+    steps.push({ 
+      ...allSteps.base.technicianRejected, 
+      description: approvalReason || "Task rejected by technician",
+      status: "current" 
+    });
+    return steps;
+  }
+
+  if (status === "scheduled") {
+    steps.push({ ...allSteps.base.scheduled, status: "current" });
+    return steps;
+  }
+
+  if (status === "finish") {
+    steps.push({ ...allSteps.base.scheduled, status: "completed" });
+    steps.push({ ...allSteps.base.finish, status: "current" });
+    return steps;
+  }
+
+  return steps;
 });
 
 const { params, getDetail, detailTask } = inject("roomsContext", {});
@@ -58,16 +97,11 @@ const router = useRouter();
 const route = useRoute();
 
 onMounted(async () => {
-  console.log("jalan");
   const id = window.location.pathname;
   const parts = id.split("/");
   const uuid = parts[parts.length - 1];
-  console.log("jalan", uuid);
-  console.log("Detail Task", detailTask?.value);
   try {
     await getDetail(uuid);
-    console.log("Detail Task after fetch:", detailTask.value);
-    console.log(detailTask?.value);
   } catch (error) {
     console.error("Failed to fetch rooms:", error);
   }
@@ -103,8 +137,6 @@ const taskDetail = computed(() => {
     },
   ];
 });
-
-watchEffect(() => {});
 </script>
 
 <template>
@@ -114,7 +146,6 @@ watchEffect(() => {});
         <button
           @click="router.go(-1)"
           class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          aria-label="Kembali ke daftar task"
         >
           <ChevronLeft class="h-6 w-6 text-gray-700" />
         </button>
@@ -128,206 +159,59 @@ watchEffect(() => {});
       <hr class="py-1" />
       <div class="flex flex-col">
         <div class="flex flex-col w-full p-4 gap-4">
-          <!-- Step 1 -->
           <div
             class="flex items-start gap-3 w-full"
-            v-for="(step, index) in steps"
+            v-for="(step, index) in dynamicSteps"
             :key="index"
           >
+            <!-- Step Icon & Line -->
             <div class="flex flex-col items-center gap-1">
-              <!-- Completed Step -->
-              <div
-                v-if="step.status === 'completed'"
-                class="flex w-6 h-6 p-1.5 justify-center items-center rounded-full bg-purple-600"
-              >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 3L4.5 8.5L2 6"
-                    stroke="white"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
+              <div v-if="step.status === 'completed'" class="flex w-6 h-6 p-1.5 justify-center items-center rounded-full bg-purple-600">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 3L4.5 8.5L2 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </div>
-
-              <!-- Current Step -->
               <div v-else-if="step.status === 'current'" class="relative">
-                <svg
-                  width="32"
-                  height="70"
-                  viewBox="0 0 32 70"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M16 32L16 66"
-                    stroke="#E9EAEB"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  ></path>
-                  <g filter="url(#filter0_dd_15562_2460)">
-                    <rect
-                      x="4"
-                      y="4"
-                      width="24"
-                      height="24"
-                      rx="12"
-                      fill="#7F56D9"
-                    ></rect>
-                    <circle cx="16" cy="16" r="4" fill="white"></circle>
+                <svg width="32" height="70" viewBox="0 0 32 70" fill="none">
+                  <path d="M16 32L16 66" stroke="#E9EAEB" stroke-width="2" stroke-linecap="round" />
+                  <g filter="url(#filter0_dd)">
+                    <rect x="4" y="4" width="24" height="24" rx="12" fill="#7F56D9" />
+                    <circle cx="16" cy="16" r="4" fill="white" />
                   </g>
                   <defs>
-                    <filter
-                      id="filter0_dd_15562_2460"
-                      x="0"
-                      y="0"
-                      width="32"
-                      height="32"
-                      filterUnits="userSpaceOnUse"
-                      color-interpolation-filters="sRGB"
-                    >
-                      <feFlood
-                        flood-opacity="0"
-                        result="BackgroundImageFix"
-                      ></feFlood>
-                      <feColorMatrix
-                        in="SourceAlpha"
-                        type="matrix"
-                        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                        result="hardAlpha"
-                      ></feColorMatrix>
-                      <feMorphology
-                        radius="4"
-                        operator="dilate"
-                        in="SourceAlpha"
-                        result="effect1_dropShadow_15562_2460"
-                      ></feMorphology>
-                      <feOffset></feOffset>
-                      <feComposite in2="hardAlpha" operator="out"></feComposite>
-                      <feColorMatrix
-                        type="matrix"
-                        values="0 0 0 0 0.619608 0 0 0 0 0.466667 0 0 0 0 0.929412 0 0 0 1 0"
-                      ></feColorMatrix>
-                      <feBlend
-                        mode="normal"
-                        in2="BackgroundImageFix"
-                        result="effect1_dropShadow_15562_2460"
-                      ></feBlend>
-                      <feColorMatrix
-                        in="SourceAlpha"
-                        type="matrix"
-                        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                        result="hardAlpha"
-                      ></feColorMatrix>
-                      <feMorphology
-                        radius="2"
-                        operator="dilate"
-                        in="SourceAlpha"
-                        result="effect2_dropShadow_15562_2460"
-                      ></feMorphology>
-                      <feOffset></feOffset>
-                      <feComposite in2="hardAlpha" operator="out"></feComposite>
-                      <feColorMatrix
-                        type="matrix"
-                        values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-                      ></feColorMatrix>
-                      <feBlend
-                        mode="normal"
-                        in2="effect1_dropShadow_15562_2460"
-                        result="effect2_dropShadow_15562_2460"
-                      ></feBlend>
-                      <feBlend
-                        mode="normal"
-                        in="SourceGraphic"
-                        in2="effect2_dropShadow_15562_2460"
-                        result="shape"
-                      ></feBlend>
+                    <filter id="filter0_dd" x="0" y="0" width="32" height="32" filterUnits="userSpaceOnUse">
+                      <feMorphology radius="4" operator="dilate" in="SourceAlpha" result="effect1_dropShadow" />
+                      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0.619 0 0 0 0 0.467 0 0 0 0 0.929 0 0 0 1 0" />
+                      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow" />
                     </filter>
                   </defs>
                 </svg>
               </div>
-
-              <!-- Pending Step -->
               <div v-else class="flex items-center justify-center">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect
-                    x="0.75"
-                    y="0.75"
-                    width="22.5"
-                    height="22.5"
-                    rx="11.25"
-                    fill="white"
-                  ></rect>
-                  <rect
-                    x="0.75"
-                    y="0.75"
-                    width="22.5"
-                    height="22.5"
-                    rx="11.25"
-                    stroke="#E9EAEB"
-                    stroke-width="1.5"
-                  ></rect>
-                  <circle cx="12" cy="12" r="4" fill="#D5D7DA"></circle>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="11.25" fill="white" stroke="#E9EAEB" stroke-width="1.5" />
+                  <circle cx="12" cy="12" r="4" fill="#D5D7DA" />
                 </svg>
               </div>
-
-              <!-- Connector Line (only for non-last items) -->
-              <div v-if="index < steps.length - 1 && step.status !== 'current'">
-                <svg
-                  width="2"
-                  height="36"
-                  viewBox="0 0 2 36"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1 1L1 35"
-                    stroke="#7F56D9"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  ></path>
+              <div v-if="index < dynamicSteps.length - 1 && step.status !== 'current'">
+                <svg width="2" height="36" viewBox="0 0 2 36" fill="none">
+                  <path d="M1 1L1 35" stroke="#7F56D9" stroke-width="2" stroke-linecap="round" />
                 </svg>
               </div>
             </div>
 
-            <div
-              class="flex flex-col py-0.5 pb-6 flex-1"
-              :class="{ 'pb-0': index === steps.length - 1 }"
-            >
-              <div
-                class="text-sm font-bold leading-5"
-                :class="{
-                  'text-gray-700': step.status !== 'current',
-                  'text-purple-700': step.status === 'current',
-                }"
-              >
+            <!-- Step Text -->
+            <div class="flex flex-col py-0.5 pb-6 flex-1" :class="{ 'pb-0': index === dynamicSteps.length - 1 }">
+              <div class="text-sm font-bold leading-5" :class="{ 'text-gray-700': step.status !== 'current', 'text-purple-700': step.status === 'current' }">
                 {{ step.title }}
               </div>
-              <div
-                class="text-sm font-normal leading-5"
-                :class="{
-                  'text-gray-600': step.status !== 'current',
-                  'text-purple-600': step.status === 'current',
-                }"
-              >
+              <div class="text-sm font-normal leading-5" :class="{ 'text-gray-600': step.status !== 'current', 'text-purple-600': step.status === 'current' }">
                 {{ step.description }}
               </div>
             </div>
           </div>
         </div>
+
         <MaintenanceCard :details="taskDetail">
           <template #icon>
             <svg
@@ -381,3 +265,11 @@ watchEffect(() => {});
     </div>
   </div>
 </template>
+
+<style scoped>
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+</style>
