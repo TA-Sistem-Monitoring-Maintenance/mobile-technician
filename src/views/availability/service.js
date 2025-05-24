@@ -1,8 +1,10 @@
-import { patch, post } from "../../utils/networkUtils";
+import { get, patch, post } from "../../utils/networkUtils";
 
 export const Service = {
-  sendOTP: (body) => post("/forgot-password/", body, {}, "form-data"),
-  checkOTP: (body) => post("/forgot-password/check-otp", body, {}, "form-data"),
+  createAvailability: (body) =>
+    post("/mobile/technician/", body, {}, "form-data"),
+  getAvailability: (body) =>
+    get("/mobile/technician/show", body, {}, "form-data"),
   resetPassword: (body) =>
     patch("/forgot-password/update", body, {}, "form-data"),
 };

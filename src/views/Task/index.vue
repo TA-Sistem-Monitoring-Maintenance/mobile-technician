@@ -52,7 +52,7 @@ onMounted(async () => {
 watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
-console.log(check);
+console.log(rooms);
 const router = useRouter();
 </script>
 
@@ -112,11 +112,12 @@ const router = useRouter();
               </template>
 
               <template #body="{ rowData }">
-                <MyColumn :rowData="rowData" field="name"> </MyColumn>
+                <MyColumn :rowData="rowData" field="data.name"> </MyColumn>
                 <MyColumn :rowData="rowData" field="detail">
                   <p class="text-sm-regular text-gray/600">
-                    {{ rowData.ticket?.asset?.room?.location?.name }}
-                    {{ rowData.ticket?.asset?.room?.name }}
+                    {{ rowData.data?.ticket?.asset?.room?.location?.name }}
+                    {{ rowData.data?.ticket?.asset?.room?.name }}
+                    {{ rowData?.data?.description }}
                   </p>
                   <p class="text-sm-regular text-gray/600">
                     {{ rowData.ticket?.asset?.name }}

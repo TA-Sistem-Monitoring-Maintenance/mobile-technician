@@ -66,6 +66,7 @@ import { createPopper } from "@popperjs/core";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { Menu02 } from "untitledui-js/vue";
+import VueCookies from "vue-cookies";
 
 const router = useRouter();
 const isDropdownOpen = ref(false);
@@ -128,7 +129,7 @@ function goToAvailability() {
 }
 
 function logout() {
-  // your logout logic here
+  VueCookies.remove("tokenMonitoringMobile"); // Remove token from storage
   isDropdownOpen.value = false;
   router.push("/login");
 }

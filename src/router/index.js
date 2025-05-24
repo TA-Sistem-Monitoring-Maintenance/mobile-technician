@@ -115,7 +115,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next("/login"); // Redirect ke login jika tidak ada token
   } else if (to.path === "/login" && isAuthenticated) {
-    next("/dashboard"); // Redirect ke dashboard jika sudah login dan mencoba mengakses halaman login
+    next("/task"); // Redirect ke dashboard jika sudah login dan mencoba mengakses halaman login
   } else {
     next(); // Lanjutkan navigasi jika sudah terautentikasi atau tidak perlu autentikasi
   }
