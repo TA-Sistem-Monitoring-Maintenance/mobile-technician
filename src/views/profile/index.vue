@@ -21,63 +21,64 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import { Camera01 } from "untitledui-js/vue";
-
-const {
-  getRooms = () => Promise.resolve(),
-  rooms,
-  handleCurrentSlider,
-  currentSlider,
-  params,
-  handleCurrentModal,
-  currentModal,
-  check,
-  deleteRoom,
-} = inject("roomsContext", {});
+import { ChevronLeft } from "untitledui-js/vue";
+import router from "../../router";
+const { showProfile, updateProfile, handleFileUpload, profilePicture } = inject("profileContext", {});
 const tableData = ref([]);
 
-const handleChangePage = async (newPage) => {
-  params.page = newPage;
-  await getRooms();
+const profileData = ref({
+  name: "",
+  email: "",
+  whatsapp: "",
+});
+onMounted(async () => {
+  const response = await showProfile();
+  profileData.value = {
+    name: response.data.name,
+    email: response.data.email,
+    whatsapp: response.data.whatsapp,
+    role: response.data.role?.name || "Teknisi",
+  };
+  profilePicture.value = response.data.profilePicture;
+});
+
+const handleSave = async () => {
+  try {
+    await updateProfile(profileData.value);
+    alert("Profile berhasil diperbarui.");
+  } catch (error) {
+    alert("Gagal memperbarui profile.");
+  }
 };
 
-// watchEffect(() => {
-//   console.log("Current Modal State:", currentModal.value);
-// });
-// console.log(check);
+const triggerFileInput = () => {
+  document.getElementById("profile-picture-input").click();
+};
 
-onBeforeUnmount(() => {
-  codeReader?.reset();
-});
+const goBack = () => {
+  router.back();
+};
 </script>
 
 <template>
-  <MyModalSlider
-    :open="currentSlider?.current === 'detail-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><DetailSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'form-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><formSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'import-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><importSlider /> </template>
-  </MyModalSlider>
   <simplebar class="h-full" forceVisible="y" autoHide="{false}">
     <div class="bg-white">
-      <div class="pb-3 gap-3">
-        <p class="text-lg-semibold text-gray/900">Scan User</p>
-        <p class="text-sm-regular text-gray/600 pb-2">
-          scan the damaged device in the room
-        </p>
-        <hr class="py-1" />
+      <div class="flex flex-rows gap-3">
+        <button
+          @click="goBack"
+          class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Kembali ke daftar task"
+        >
+          <ChevronLeft class="h-6 w-6 text-gray-700" />
+        </button>
+        <div class="flex flex-col">
+          <p class="text-lg-semibold text-gray/900">Profile</p>
+          <p class="text-sm-regular text-gray/600 pb-2">
+            Update your photo and personal details
+          </p>
+        </div>
       </div>
+      <hr class="py-2" />
       <div class="flex flex-col gap-4">
         <div>
           <div class="relative inline-block mb-6 ml-2">
@@ -92,15 +93,20 @@ onBeforeUnmount(() => {
             >
               <Camera01 class="w-5 h-5 text-gray-500" />
             </button>
+            <input
+              type="file"
+              id="profile-picture-input"
+              accept="image/*"
+              @change="handleFileUpload"
+              class="hidden"
+            />
           </div>
           <div>
-            <h2 class="text-lg font-semibold text-gray-900">Hamilton</h2>
-            <p class="text-gray-600 mb-6">Teknisi</p>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-gray-900">Personal info</h3>
-            <p class="text-xs text-gray-600 leading-relaxed">
-              Update your photo and personal details.
+            <h2 class="text-lg font-semibold text-gray-900">
+              {{ profileData.name }}
+            </h2>
+            <p class="text-gray-600 mb-6">
+              {{ profileData.role ?? "Role None" }}
             </p>
           </div>
           <div class="border border-gray-200 rounded-lg p-4 mt-4">
@@ -114,7 +120,7 @@ onBeforeUnmount(() => {
                 id="name"
                 name="name"
                 placeholder="Enter your name"
-                
+                v-model="profileData.name"
               />
             </div>
             <div class="flex flex-col gap-2 mt-4">
@@ -127,7 +133,7 @@ onBeforeUnmount(() => {
                 id="email"
                 name="email"
                 placeholder="Enter your email"
-                
+                v-model="profileData.email"
               />
             </div>
             <div class="flex flex-col gap-2 mt-4">
@@ -137,21 +143,22 @@ onBeforeUnmount(() => {
                 Whatsapp
               </label>
               <MyTextField
-                id="email"
-                name="email"
+                id="whatsapp"
+                name="whatsapp"
                 placeholder="Enter your whatsapp"
-                
+                v-model="profileData.whatsapp"
               />
             </div>
             <div class="flex justify-end gap-2 mt-4">
-              <MyButton color="secondary" variant="outlined" size="md">
+              <MyButton color="secondary" variant="outlined" size="md" @click="goBack">
                 <p class="text-sm-semibold">Cancel</p>
               </MyButton>
               <MyButton
-                type="submit"
+                type="button"
                 color="primary"
                 variant="filled"
                 size="md"
+                @click="handleSave"
               >
                 <p class="text-sm-semibold">Save changes</p>
               </MyButton>

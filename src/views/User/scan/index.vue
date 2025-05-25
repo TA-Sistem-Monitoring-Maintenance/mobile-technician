@@ -119,7 +119,7 @@ const validateRoom = async (scannedId) => {
     <div class="bg-white">
       <div class="flex flex-rows gap-3">
         <button
-          @click="router.go(-1)"
+          @click="router.push('/history')"
           class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
           aria-label="Kembali ke daftar task"
         >
