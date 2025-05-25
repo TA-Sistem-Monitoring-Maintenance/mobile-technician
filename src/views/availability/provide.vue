@@ -31,14 +31,16 @@ async function createAvailability(body) {
   try {
     const formData = new FormData();
     body?.availabilities.forEach((item, index) => {
-      formData.append(
-        `availabilities[${index}][start_time]`,
-        item.startDate.toISOString()
-      );
-      formData.append(
-        `availabilities[${index}][end_time]`,
-        item.endDate.toISOString()
-      );
+      if (item?.startDate) {
+        formData.append(
+          `availabilities[${index}][start_time]`,
+          item.startDate.toISOString()
+        );
+        formData.append(
+          `availabilities[${index}][end_time]`,
+          item.endDate.toISOString()
+        );
+      }
     });
     await Service.createAvailability(formData, "form-data")
       .then(MyToaster)

@@ -5,21 +5,19 @@ import MyDatePicker from "@components/DatePicker/MyDatePicker.vue";
 import { Plus } from "untitledui-js/vue";
 import MyButton from "@components/Button/MyButton.vue";
 
-const { createAvailability, getAvability, availability } = inject(
-  "availability",
-  {}
-);
+const { createAvailability, getAvability } = inject("availability", {});
 
 // 1) Buat form dengan initial array
 const { values, handleSubmit, isSubmitting } = useForm({
   initialValues: { availabilities: [{ startDate: null, endDate: null }] },
 });
 
-// 2) FieldArray untuk manipulasi array
+// 2) FieldArray untuk manipulasi array, sekarang termasuk `remove`
 const {
   fields: availabilities,
   push,
   replace,
+  remove,
 } = useFieldArray("availabilities");
 
 function addNewAvailability() {
@@ -36,15 +34,12 @@ onMounted(async () => {
         startDate: item.start_time ? new Date(item.start_time) : null,
         endDate: item.end_time ? new Date(item.end_time) : null,
       }));
-      // Use replace to update the whole array
       replace(mapped);
     }
   } catch (error) {
     console.error("Failed to fetch approvals:", error);
   }
 });
-
-console.log(availability);
 </script>
 
 <template>
@@ -57,10 +52,24 @@ console.log(availability);
       <hr class="py-1" />
 
       <div class="flex flex-col gap-3">
-        <!-- 3) Iterasi lewat FieldArray -->
         <template v-for="(field, idx) in availabilities" :key="field.key">
+          <!-- header with delete button -->
+          <div class="flex justify-between items-center">
+            <p class="text-md-semibold text-gray/900">
+              Availability {{ idx + 1 }}
+            </p>
+            <button
+              type="button"
+              @click="remove(idx)"
+              class="text-error/500 text-sm-semibold"
+            >
+              <p class="text-error/500">Delete</p>
+            </button>
+          </div>
+
+          <!-- date pickers -->
           <div class="flex flex-col gap-1">
-            <p>Start date and time #{{ idx + 1 }}</p>
+            <p class="text-sm-regular text-gray/600">Start date and time</p>
             <MyDatePicker
               v-model="field.value.startDate"
               :teleport="true"
@@ -69,7 +78,7 @@ console.log(availability);
             />
           </div>
           <div class="flex flex-col gap-1">
-            <p>End date and time #{{ idx + 1 }}</p>
+            <p class="text-sm-regular text-gray/600">End date and time</p>
             <MyDatePicker
               v-model="field.value.endDate"
               :teleport="true"
