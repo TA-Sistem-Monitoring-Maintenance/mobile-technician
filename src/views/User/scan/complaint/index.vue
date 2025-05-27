@@ -30,14 +30,21 @@ const selectedRoom = ref(null);
 console.log("selectedRoom", selectedRoom);
 const selectedLocation = ref(null);
 
-const { searchAsset, handleSubmit, dropzoneRef, asset, reason } = inject("roomsContext", {});
+const { searchAsset, handleSubmit, dropzoneRef, asset, reason } = inject(
+  "roomsContext",
+  {}
+);
 
-const handleChangePage = async (newPage) => {
-  params.page = newPage;
-  await getRooms();
-};
 const isRoomLoaded = ref(false);
 const presetRoomId = ref(null);
+const selectedImages = ref([]);
+
+// 2) keep local state in sync with MyDropzone
+//    MyDropzone calls `props.onChange(newFiles)`
+const handleFilesChange = (files) => {
+  console.log("Selected files:", files);
+  selectedImages.value = files;
+};
 
 watchEffect(async () => {
   if (isRoomLoaded.value) return;
@@ -155,15 +162,16 @@ watchEffect(async () => {
             :errorMessage="error"
             :helperText="error"
             :maxLength="500"
+            onDropAccepted=""
           />
         </div>
         <div class="flex flex-col gap-2">
           <MyDropzone
             ref="dropzoneRef"
             :multiple="true"
-            :accept="['image/jpeg', 'image/png', 'image/jpg']"
-            :maxSize="2500000"
+            :maxSize="2_500_000"
             :showImage="true"
+            :onChange="handleFilesChange"
           />
         </div>
         <div class="flex justify-end gap-2">

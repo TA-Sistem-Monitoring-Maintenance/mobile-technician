@@ -164,6 +164,7 @@ const handleSubmit = async () => {
   try {
     const res = await Service.submitComplaint(formData);
     MyToaster({ type: "success", message: "Complaint submitted successfully" });
+    router.push("/history");
   } catch (err) {
     console.error("Failed to submit complaint", err);
     MyToaster(

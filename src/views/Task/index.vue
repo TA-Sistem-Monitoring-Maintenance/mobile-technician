@@ -91,9 +91,9 @@ const router = useRouter();
                 (value) => {
                   console.log('Clicked Row:', value);
                   if (value?.status === 'scheduled') {
-                    router.push(`/task/scan/${value.id}`);
+                    router.push(`/task/scan/${value?.data?.id}`);
                   } else {
-                    router.push(`/task/${value.id}`);
+                    router.push(`/task/${value?.data?.id}`);
                   }
                 }
               "

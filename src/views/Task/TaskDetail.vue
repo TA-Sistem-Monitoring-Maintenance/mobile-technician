@@ -21,7 +21,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import { useRouter } from "vue-router";
-// import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
+import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
 
 const roomsContext = inject("roomsContext", null);
@@ -38,7 +38,7 @@ onMounted(async () => {
   const id = window.location.pathname;
   const parts = id.split("/");
   const uuid = parts[parts.length - 1];
-  console.log("jalan", uuid);
+
   try {
     await getDetail(uuid);
     console.log(detailTask?.value);
@@ -46,18 +46,35 @@ onMounted(async () => {
     console.error("Failed to fetch rooms:", error);
   }
 });
+async function handleDeclineSubmit() {
+  if (!reason.value.trim()) {
+    error.value = "Reason is required";
+    return;
+  }
+  await declineMaintenance(maintenanceDetail.value.id, reason.value);
+  resetState();
+}
+
+async function handleApproveSubmit() {
+  await approveMaintenance(maintenanceDetail.value.id)
+    .then(MyToaster)
+    .catch((err) => {
+      MyToaster({ type: "error", message: "Failed to approve maintenance" });
+    });
+  handleCurrentSlider(null);
+}
 
 const taskDetail = computed(() => {
   return [
-    { label: "ID", value: detailTask?.value.id || "-" },
-    { label: "Status", value: detailTask?.value.status || "-" },
+    { label: "ID", value: detailTask?.value?.id || "-" },
+    { label: "Status", value: detailTask?.value?.status || "-" },
     {
       label: "Room",
       value: detailTask?.value?.ticket?.asset?.room?.name || "-",
     },
     {
       label: "Location",
-      value: detailTask?.value.ticket?.asset?.room?.location?.name || "-",
+      value: detailTask?.value?.ticket?.asset?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
@@ -67,9 +84,11 @@ const taskDetail = computed(() => {
     {
       label: "Schedule at",
       value:
-        moment(detailTask?.value.schedule?.start_time).format("DD/M/YY HH:mm") +
+        moment(detailTask?.value?.schedule?.start_time).format(
+          "DD/M/YY HH:mm"
+        ) +
         " - " +
-        moment(detailTask?.value.schedule?.end_time).format("DD/M/YY HH:mm"),
+        moment(detailTask?.value?.schedule?.end_time).format("DD/M/YY HH:mm"),
     },
   ];
 });
@@ -126,6 +145,9 @@ watchEffect(() => {});
           <template #actions>
             <MyButton
               color="primary"
+              :disabled="
+                taskDetail?.value?.status === 'Waiting technician approval'
+              "
               variant="filled"
               class="flex justify-start"
               @click="isModalOpen = true"
@@ -134,6 +156,9 @@ watchEffect(() => {});
             </MyButton>
             <MyButton
               color="success"
+              :disabled="
+                taskDetail?.value?.status === 'Waiting technician approval'
+              "
               variant="filled"
               class="flex justify-end"
               @click="handleApproveSubmit"
