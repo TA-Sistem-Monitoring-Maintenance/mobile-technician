@@ -32,7 +32,7 @@ const {
   currentModal,
   check,
   deleteRoom,
-} = inject("roomsContext", {});
+} = inject("technicianContext", {});
 const tableData = ref([]);
 
 const handleChangePage = async (newPage) => {
@@ -41,7 +41,6 @@ const handleChangePage = async (newPage) => {
 };
 
 onMounted(async () => {
-  console.log("jalan");
   try {
     await getRooms();
   } catch (error) {
@@ -52,7 +51,6 @@ onMounted(async () => {
 watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
-console.log(rooms);
 const router = useRouter();
 </script>
 
@@ -89,12 +87,11 @@ const router = useRouter();
               :values="rooms"
               :onClick="
                 (value) => {
-                  console.log('Clicked Row:', value);
-                  if (value?.status === 'scheduled') {
-                    router.push(`/task/scan/${value?.data?.id}`);
-                  } else {
-                    router.push(`/task/${value?.data?.id}`);
-                  }
+                  // if (value?.data?.status === 'scheduled') {
+                  //   router.push(`/task/scan/${value?.data?.id}`);
+                  // } else {
+                  router.push(`/task/${value?.data?.id}`);
+                  // }
                 }
               "
               @selectionChange="
@@ -107,26 +104,25 @@ const router = useRouter();
             >
               <template #header>
                 <MyColumn field="name" header="Name" />
-                <MyColumn header="Detail" />
-                <MyColumn field="Status" header="Location" />
+                <MyColumn header="Location" />
+                <MyColumn field="Status" header="Status" />
               </template>
 
               <template #body="{ rowData }">
                 <MyColumn :rowData="rowData" field="data.name"> </MyColumn>
-                <MyColumn :rowData="rowData" field="detail">
+                <MyColumn :rowData="rowData" field="location">
                   <p class="text-sm-regular text-gray/600">
                     {{ rowData.data?.ticket?.asset?.room?.location?.name }}
                     {{ rowData.data?.ticket?.asset?.room?.name }}
-                    {{ rowData?.data?.description }}
                   </p>
                   <p class="text-sm-regular text-gray/600">
                     {{ rowData.ticket?.asset?.name }}
                   </p>
                 </MyColumn>
-                <MyColumn :rowData="rowData" field="deleted_at">
+                <MyColumn :rowData="rowData" field="status">
                   <MyChip
-                    :label="rowData.status"
-                    :color="rowData.status ? 'warning' : 'success'"
+                    :label="rowData?.data?.status"
+                    :color="rowData?.data?.status ? 'warning' : 'success'"
                     variant="filled"
                     size="sm"
                     rounded="xl"
