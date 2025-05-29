@@ -23,22 +23,21 @@ import { FilterLines } from "untitledui-js/vue";
 import { useRouter } from "vue-router";
 import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
+import MyToaster from "@components/Toaster/MyToaster";
 
-const roomsContext = inject("roomsContext", null);
-if (!roomsContext) {
-  throw new Error("roomsContext is not provided!");
+const technicianContext = inject("technicianContext", null);
+if (!technicianContext) {
+  throw new Error("technicianContext is not provided!");
 }
-const { getDetail, detailTask, params } = roomsContext;
+const { getDetail, detailTask, params, approveMaintenance } = technicianContext;
 
 const tableData = ref([]);
 const router = useRouter();
+const id = window.location.pathname;
+const parts = id.split("/");
+const uuid = parts[parts.length - 1];
 
 onMounted(async () => {
-  console.log("jalan");
-  const id = window.location.pathname;
-  const parts = id.split("/");
-  const uuid = parts[parts.length - 1];
-
   try {
     await getDetail(uuid);
     console.log(detailTask?.value);
@@ -46,6 +45,9 @@ onMounted(async () => {
     console.error("Failed to fetch rooms:", error);
   }
 });
+
+const status = computed(() => detailTask.value?.status ?? "");
+
 async function handleDeclineSubmit() {
   if (!reason.value.trim()) {
     error.value = "Reason is required";
@@ -56,12 +58,11 @@ async function handleDeclineSubmit() {
 }
 
 async function handleApproveSubmit() {
-  await approveMaintenance(maintenanceDetail.value.id)
+  await approveMaintenance(uuid)
     .then(MyToaster)
     .catch((err) => {
       MyToaster({ type: "error", message: "Failed to approve maintenance" });
     });
-  handleCurrentSlider(null);
 }
 
 const taskDetail = computed(() => {
@@ -92,6 +93,8 @@ const taskDetail = computed(() => {
     },
   ];
 });
+
+console.log("Task Detail:", detailTask.value.status);
 
 watchEffect(() => {});
 </script>
@@ -141,8 +144,10 @@ watchEffect(() => {});
           </template>
 
           <template #title> Maintenance </template>
-
           <template #actions>
+            <!-- only show “Scan” when status is exactly "scheduled" -->
+
+            <!-- “Decline” is always available (but still disabled for technician-approval state) -->
             <MyButton
               color="primary"
               :disabled="
@@ -154,7 +159,21 @@ watchEffect(() => {});
             >
               <p class="text-md-semibold">Decline</p>
             </MyButton>
+
             <MyButton
+              v-if="status === 'scheduled'"
+              color="success"
+              :disabled="
+                detailTask?.value?.status === 'Waiting technician approval'
+              "
+              variant="filled"
+              class="flex justify-end"
+              @click="router.push(`/task/scan/${uuid}`)"
+            >
+              <p class="text-md-semibold">Scan</p>
+            </MyButton>
+            <MyButton
+              v-else-if="status === 'Waiting technician approval'"
               color="success"
               :disabled="
                 taskDetail?.value?.status === 'Waiting technician approval'
