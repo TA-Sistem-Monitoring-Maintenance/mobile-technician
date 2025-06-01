@@ -26,7 +26,7 @@ export async function handleLogin(body) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/auth/",
+      "http://localhost:3000/monitoring/v1/mobile/auth/",
       formData,
       {
         headers: {
@@ -43,6 +43,7 @@ export async function handleLogin(body) {
     });
 
     VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
+    console.log(response?.data);
     body.router.push("/task");
   } catch (error) {
     MyToaster({
