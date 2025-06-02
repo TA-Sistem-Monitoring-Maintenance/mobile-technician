@@ -25,8 +25,10 @@ export async function handleLogin(body) {
     // Get timezone
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+    console.log("Time Zone:", timeZone);
+
     const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/mobile/auth/",
+      "http://31.97.49.224/api/monitoring/v1/mobile/auth/",
       formData,
       {
         headers: {
