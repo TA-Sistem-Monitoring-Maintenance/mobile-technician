@@ -21,76 +21,84 @@ import moment from "moment-timezone";
 import { defineProps } from "vue";
 
 const dynamicSteps = computed(() => {
-  const status = detailTask?.value?.status || "";
+  const statusRaw = detailTask?.value?.status || "";
+  const status = statusRaw.toLowerCase();
+
   const approvalReason = detailTask?.value?.approval_reason || "";
 
   const allSteps = {
-    base: {
-      pending: {
-        title: "Pending",
-        description: "Waiting for admin approval",
-      },
-      adminRejected: {
-        title: "Admin rejected",
-        // description nanti diisi dinamis
-      },
-      waitingTechnician: {
-        title: "Waiting for technician approval",
-        description: "Approved by admin, waiting for technician",
-      },
-      technicianRejected: {
-        title: "Technician rejected",
-        // description nanti diisi dinamis
-      },
-      scheduled: {
-        title: "Scheduled",
-        description: "Task scheduled for technician",
-      },
-      finish: {
-        title: "Finish",
-        description: "Maintenance task completed",
-      },
+    pending: {
+      title: "Pending",
+      description: "Waiting for admin approval",
+    },
+    adminRejected: {
+      title: "Admin rejected",
+      description: approvalReason || "Task rejected by Admin",
+    },
+    waitingTechnician: {
+      title: "Waiting for technician approval",
+      description: "Approved by admin, waiting for technician",
+    },
+    technicianRejected: {
+      title: "Technician rejected",
+      description: approvalReason || "Task rejected by technician",
+    },
+    scheduled: {
+      title: "Scheduled",
+      description: "Task scheduled for technician",
+    },
+    finish: {
+      title: "Finish",
+      description: "Maintenance task completed",
     },
   };
 
   const steps = [];
 
-  steps.push({ ...allSteps.base.pending, status: "completed" });
+  // Step 1 selalu Pending (status completed jika sudah lebih dari pending)
+  steps.push({
+    ...allSteps.pending,
+    status: status === "pending" ? "current" : "completed",
+  });
 
-  if (status === "Rejected") {
-    // Ini asumsinya reject oleh admin
-    steps.push({ 
-      ...allSteps.base.adminRejected, 
-      description: approvalReason || "Task rejected by Admin",
-      status: "current" 
+  // Handle rejected by admin: status "rejected" (case insensitive)
+  if ( status === "rejected") {
+    steps.push({
+      ...allSteps.adminRejected,
+      status: "current",
     });
     return steps;
   }
 
-  steps.push({ ...allSteps.base.waitingTechnician, status: "completed" });
-
-  if (status === "technician_rejected") {
-    steps.push({ 
-      ...allSteps.base.technicianRejected, 
-      description: approvalReason || "Task rejected by technician",
-      status: "current" 
+  if (
+    status === "waitingtechnician" ||
+    status === "scheduled" ||
+    status === "finish"
+  ) {
+    steps.push({
+      ...allSteps.waitingTechnician,
+      status: status === "waitingtechnician" ? "current" : "completed",
     });
-    return steps;
   }
 
-  if (status === "scheduled") {
-    steps.push({ ...allSteps.base.scheduled, status: "current" });
-    return steps;
+  if (status === "scheduled" || status === "finish") {
+    steps.push({
+      ...allSteps.scheduled,
+      status: status === "scheduled" ? "current" : "completed",
+    });
   }
 
   if (status === "finish") {
-    steps.push({ ...allSteps.base.scheduled, status: "completed" });
-    steps.push({ ...allSteps.base.finish, status: "current" });
-    return steps;
+    steps.push({
+      ...allSteps.finish,
+      status: "current",
+    });
   }
 
   return steps;
 });
+
+
 
 const { params, getDetail, detailTask } = inject("roomsContext", {});
 const router = useRouter();
