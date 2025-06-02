@@ -20,6 +20,7 @@ const currentModal = ref({
   current: "",
   status: false,
 });
+const dropzoneRef = ref(null);
 
 const check = ref();
 
@@ -148,6 +149,47 @@ const deleteRoom = async (data) =>
     .then(getRooms)
     .catch(MyToaster);
 
+const approveMaintenance = async (id) => {
+  const formData = new FormData();
+  formData.append("approved", true);
+  return Service.approveMaintenance(id, formData)
+    .then(MyToaster)
+    .then(() => handleCurrentSlider({ status: false, current: null }))
+    .catch(MyToaster);
+};
+
+const handleSubmitForm = async (body) => {
+  console.log(body);
+  if (!body?.description) {
+    return MyToaster({ type: "error", message: "Please select an asset" });
+  }
+
+  const files = body?.selectedImages || [];
+  if (files.length === 0) {
+    return MyToaster({ type: "error", message: "Evidence is required" });
+  }
+
+  const formData = new FormData();
+  formData.append("asset_id", body?.selectedAsset.id);
+
+  formData.append("description", body?.description);
+
+  for (const file of files) {
+    formData.append("evidence", file);
+  }
+
+  try {
+    const res = await Service.submitForm(body?.uuid, formData);
+    MyToaster({ type: "success", message: "Complaint submitted successfully" });
+    router.push("/task");
+  } catch (err) {
+    console.error("Failed to submit complaint", err);
+    MyToaster(
+      err?.response?.data || { type: "error", message: "Submit failed" }
+    );
+  }
+};
+
 watch(
   () => params,
   debounce(() => {
@@ -157,7 +199,7 @@ watch(
   { deep: true }
 );
 
-provide("roomsContext", {
+provide("technicianContext", {
   getRooms,
   rooms,
   currentSlider,
@@ -169,15 +211,17 @@ provide("roomsContext", {
   check,
   searchGrade,
   searchRoom,
+  dropzoneRef,
   searchLocation: Service.searchLocation,
   searchCategory: Service.searchCategory,
   downloadTemplateImport,
-
+  approveMaintenance,
   deleteRoom,
   checkRoom,
   updateRoom,
   getDetail,
   detailTask,
+  handleSubmitForm,
 });
 </script>
 

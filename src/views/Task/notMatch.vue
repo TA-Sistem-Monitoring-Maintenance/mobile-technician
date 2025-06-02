@@ -60,7 +60,7 @@ const router = useRouter();
 const video = ref(null);
 const result = ref("");
 
-const { checkRoom } = inject("roomsContext", {});
+const { checkRoom } = inject("technicianContext", {});
 const tableData = ref([]);
 
 console.log(result);

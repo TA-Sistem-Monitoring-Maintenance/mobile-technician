@@ -23,38 +23,63 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "@components/Dropzone/MyDropzone.vue";
+import { useRouter } from "vue-router";
 
 const {
-  getRooms = () => Promise.resolve(),
-  rooms,
   handleCurrentSlider,
   currentSlider,
-  params,
-  handleCurrentModal,
+  getDetail,
   currentModal,
   check,
   deleteRoom,
-} = inject("roomsContext", {});
-const tableData = ref([]);
+  detailTask,
+  handleSubmitForm,
+  dropzoneRef,
+} = inject("technicianContext", {});
 
-const handleChangePage = async (newPage) => {
-  params.page = newPage;
-  await getRooms();
+const router = useRouter();
+const id = window.location.pathname;
+const parts = id.split("/");
+const uuid = parts[parts.length - 2];
+const selectedRoom = ref(null);
+const selectedLocation = ref(null);
+const selectedAsset = ref(null);
+const loaded = ref(false);
+const description = ref("");
+const selectedImages = ref([]);
+
+const handleFilesChange = (files) => {
+  console.log("Selected files:", files);
+  selectedImages.value = files;
 };
 
 onMounted(async () => {
   console.log("jalan");
   try {
-    await getRooms();
+    await getDetail(uuid);
+    console.log(detailTask.value);
+    selectedAsset.value = {
+      id: detailTask.value.ticket?.asset?.id,
+      name: detailTask.value.ticket?.asset?.name,
+    };
+    selectedRoom.value = {
+      id: detailTask.value.ticket?.asset?.room?.id,
+      name: detailTask.value.ticket?.asset?.room?.name,
+    };
+    selectedLocation.value = {
+      id: detailTask.value.ticket?.asset?.room?.location?.id,
+      name: detailTask.value.ticket?.asset?.room?.location?.name,
+    };
+    loaded.value = true;
   } catch (error) {
     console.error("Failed to fetch rooms:", error);
   }
 });
-
-watchEffect(() => {
-  console.log("Current Modal State:", currentModal.value);
+watch(selectedAsset, (newVal) => {
+  console.log("selectedAsset changed:", selectedAsset.value);
+  console.log("selectedRoom changed:", selectedRoom.value);
+  console.log("selectedLocation changed:", selectedLocation.value);
 });
-console.log(check);
 </script>
 
 <template>
@@ -70,13 +95,7 @@ console.log(check);
   >
     <template #element><formSlider /> </template>
   </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'import-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><importSlider /> </template>
-  </MyModalSlider>
-  <simplebar class="h-full" forceVisible="y" autoHide="{false}">
+  <simplebar v-if="loaded" class="h-full" forceVisible="y" autoHide="{false}">
     <div class="bg-white">
       <div class="pb-3 gap-3">
         <p class="text-lg-semibold text-gray/900">Proof of work</p>
@@ -95,6 +114,9 @@ console.log(check);
           <MyAsyncDropdown
             class="w-full"
             name="Location"
+            :disabled="true"
+            :v-model="selectedLocation"
+            :modelValue="selectedLocation"
             :placeholder="'Select Location'"
           />
         </div>
@@ -107,6 +129,8 @@ console.log(check);
           <MyAsyncDropdown
             class="w-full"
             name="Room"
+            :disabled="true"
+            :modelValue="selectedRoom"
             :placeholder="'Select Room'"
           />
         </div>
@@ -118,7 +142,9 @@ console.log(check);
           </label>
           <MyAsyncDropdown
             class="w-full"
-            name="Equipment"
+            name="asset"
+            :disabled="true"
+            :modelValue="selectedAsset"
             :placeholder="'Select Equipment'"
           />
         </div>
@@ -126,27 +152,44 @@ console.log(check);
           <label
             class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
           >
-            Reason
+            Description
           </label>
           <MyTextArea
             placeholder="Enter a reason..."
-            :errorMessage="error"
-            :helperText="error"
             :maxLength="500"
+            v-model="description"
           />
         </div>
         <div class="flex flex-col gap-2">
           <MyDropzone
-            :errorMessage="error"
-            :helperText="error"
-            :maxLength="500"
-          ></MyDropzone>
+            ref="dropzoneRef"
+            :accept="['.jpg', '.jpeg', '.png', '.gif']"
+            :multiple="true"
+            :maxSize="2_500_000"
+            :showImage="true"
+            :onChange="handleFilesChange"
+          />
         </div>
         <div class="flex justify-end gap-2">
           <MyButton color="secondary" variant="outlined" size="md">
             <p class="text-sm-semibold">History</p>
           </MyButton>
-          <MyButton type="submit" color="primary" variant="filled" size="md">
+          <MyButton
+            type="submit"
+            color="primary"
+            variant="filled"
+            size="md"
+            @click="
+              handleSubmitForm({
+                uuid,
+                description,
+                selectedAsset,
+                selectedRoom,
+                selectedLocation,
+                selectedImages,
+              })
+            "
+          >
             <p class="text-sm-semibold">Send</p>
           </MyButton>
         </div>

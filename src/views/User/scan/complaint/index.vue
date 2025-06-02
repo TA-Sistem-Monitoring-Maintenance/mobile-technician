@@ -27,7 +27,7 @@ import { Service } from "./service";
 import { useRoute } from "vue-router";
 const route = useRoute();
 const selectedRoom = ref(null);
-console.log("selectedRoom", selectedRoom);
+
 const selectedLocation = ref(null);
 
 const { searchAsset, handleSubmit, dropzoneRef, asset, reason } = inject(
@@ -39,8 +39,6 @@ const isRoomLoaded = ref(false);
 const presetRoomId = ref(null);
 const selectedImages = ref([]);
 
-// 2) keep local state in sync with MyDropzone
-//    MyDropzone calls `props.onChange(newFiles)`
 const handleFilesChange = (files) => {
   console.log("Selected files:", files);
   selectedImages.value = files;
