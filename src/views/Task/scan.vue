@@ -76,9 +76,9 @@ watchEffect(async () => {
     const data = await checkRoom(uuid, currentResult); // Directly await the promise
     console.log("Room check successful:", data);
     if (data === "success") {
-      router.push(`${window.location.pathname}/work-submission`);
+      router.push(`${uuid}/work-submission`);
     } else {
-      router.push(`${window.location.pathname}/not-match`);
+      router.push(`${uuid}/not-match`);
     }
   }
 });
