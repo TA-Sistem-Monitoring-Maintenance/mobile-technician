@@ -44,7 +44,15 @@ export async function handleLogin(body) {
 
     VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
     console.log(response?.data);
-    body.router.push("/task");
+    if (
+      response?.data?.role?.role_menus?.some(
+        (menu_item) => menu_item.menu === "Mobile"
+      )
+    ) {
+      body.router.push("/task");
+    } else {
+      body.router.push("/history");
+    }
   } catch (error) {
     MyToaster({
       message: error.response?.data?.message || error.message || "Login failed",
