@@ -28,7 +28,7 @@ export async function handleLogin(body) {
     console.log("Time Zone:", timeZone);
 
     const response = await axios.post(
-      "http://31.97.49.224/api/monitoring/v1/mobile/auth/",
+      "https://telu-monitoring.site/api/monitoring/v1/mobile/auth/",
       formData,
       {
         headers: {
