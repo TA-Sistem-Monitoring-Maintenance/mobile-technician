@@ -81,7 +81,7 @@ console.log(check);
       <div class="pb-3 gap-3">
         <p class="text-lg-semibold text-gray/900">History</p>
         <p class="text-sm-regular text-gray/600 pb-2">
-          List of complaint history submitted
+          Submitted Maintenance Requests History
         </p>
         <hr class="py-1" />
       </div>

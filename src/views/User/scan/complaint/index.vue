@@ -107,7 +107,7 @@ watchEffect(async () => {
           Maintenance Submission Form
         </p>
         <p class="text-sm-regular text-gray/600 pb-2">
-          form for making tool complaints
+          maintenance requests
         </p>
         <hr class="py-1" />
       </div>
