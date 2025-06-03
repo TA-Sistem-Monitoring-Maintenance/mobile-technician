@@ -26,15 +26,15 @@ export async function handleLogin(body) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/mobile/auth/",
+      "https://telu-monitoring.site/api/monitoring/v1/mobile/auth/",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
           "Time-Zone": timeZone,
         },
-      }
-    );
+      }
+    );
 
     // Show success message using toaster
     MyToaster({

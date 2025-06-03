@@ -95,17 +95,17 @@ const taskDetail = computed(() => {
     { label: "Status", value: detailTask?.value?.status || "-" },
     {
       label: "Room",
-      value: detailTask?.value?.ticket?.asset?.room?.name || "-",
+      value: detailTask?.value?.asset?.room?.name || "-",
     },
     {
       label: "Location",
-      value: detailTask?.value?.ticket?.asset?.room?.location?.name || "-",
+      value: detailTask?.value?.asset?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
-      value: detailTask?.value?.ticket?.asset?.name || "-",
+      value: detailTask?.value?.asset?.name || "-",
     },
-    { label: "Category", value: detailTask?.value?.ticket?.type || "-" },
+    { label: "Category", value: detailTask?.value?.type || "-" },
     {
       label: "Schedule at",
       value:
