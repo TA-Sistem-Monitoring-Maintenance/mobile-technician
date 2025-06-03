@@ -130,23 +130,23 @@ const taskDetail = computed(() => {
     { label: "Status", value: detailTask?.value.status || "-" },
     {
       label: "Room",
-      value: detailTask?.value?.asset?.room?.name || "-",
+      value: detailTask?.value?.asset?.room?.name || detailTask?.value?.ticket?.asset?.room?.name || "-",
     },
     {
       label: "Location",
-      value: detailTask?.value?.asset?.room?.location?.name || "-",
+      value: detailTask?.value?.asset?.room?.location?.name ||detailTask?.value?.ticket?.asset?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
-      value: detailTask?.value?.asset?.name || "-",
+      value: detailTask?.value?.asset?.name ||detailTask?.value?.ticket?.asset?.name ||"-",
     },
     {
       label: "Description",
-      value: detailTask?.value?.description || "-",
+      value: detailTask?.value?.description ||detailTask?.ticket?.histories?.reason || "-",
     },
     {
       label: "Category",
-      value: detailTask?.value?.asset?.room?.category?.name || "-",
+      value: detailTask?.value?.asset?.room?.category?.name ||detailTask?.value?.ticket?.asset?.room?.category?.name ||"-",
     },
     {
       label: "Created at",
