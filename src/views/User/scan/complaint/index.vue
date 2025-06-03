@@ -25,19 +25,15 @@ import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 import { Service } from "./service";
 import { useRoute } from "vue-router";
-const router = useRouter();
 const route = useRoute();
 const selectedRoom = ref(null);
 
 const selectedLocation = ref(null);
 
-const { 
-  searchAsset, 
-  handleSubmit, 
-  dropzoneRef, 
-  asset, 
-  reason, 
-} = inject("roomsContext", {});
+const { searchAsset, handleSubmit, dropzoneRef, asset, reason } = inject(
+  "roomsContext",
+  {}
+);
 
 const isRoomLoaded = ref(false);
 const presetRoomId = ref(null);
