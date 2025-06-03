@@ -103,20 +103,18 @@ const router = useRouter();
               @changePage="handleChangePage"
             >
               <template #header>
-                <MyColumn field="name" header="Name" />
+                <MyColumn field="id" header="Id" />
                 <MyColumn header="Location" />
                 <MyColumn field="Status" header="Status" />
               </template>
 
               <template #body="{ rowData }">
-                <MyColumn :rowData="rowData" field="data.name"> </MyColumn>
+                <MyColumn :rowData="rowData" field="data.name">{{ rowData.data?.id }}</MyColumn>
                 <MyColumn :rowData="rowData" field="location">
                   <p class="text-sm-regular text-gray/600">
-                    {{ rowData.data?.ticket?.asset?.room?.location?.name }}
-                    {{ rowData.data?.ticket?.asset?.room?.name }}
-                  </p>
-                  <p class="text-sm-regular text-gray/600">
-                    {{ rowData.ticket?.asset?.name }}
+                    {{ rowData.data?.asset?.name }}
+                    {{ rowData.data?.asset?.room?.location?.name }}
+                    {{ rowData.data?.asset?.room?.name }}
                   </p>
                 </MyColumn>
                 <MyColumn :rowData="rowData" field="status">

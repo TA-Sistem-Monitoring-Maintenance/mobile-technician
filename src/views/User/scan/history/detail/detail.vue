@@ -121,15 +121,15 @@ const taskDetail = computed(() => {
     { label: "Status", value: detailTask?.value.status || "-" },
     {
       label: "Room",
-      value: detailTask?.value?.asset?.room?.name || "-",
+      value: detailTask?.value?.room?.name || "-",
     },
     {
       label: "Location",
-      value: detailTask?.value?.asset?.room?.location?.name || "-",
+      value: detailTask?.value?.room?.location?.name || "-",
     },
     {
       label: "Equipment",
-      value: detailTask?.value?.asset?.name || "-",
+      value: detailTask?.value?.name || "-",
     },
     {
       label: "Description",
@@ -137,7 +137,7 @@ const taskDetail = computed(() => {
     },
     {
       label: "Category",
-      value: detailTask?.value?.asset?.room?.category?.name || "-",
+      value: detailTask?.value?.room?.category?.name || "-",
     },
     {
       label: "Created at",
@@ -145,6 +145,23 @@ const taskDetail = computed(() => {
     },
   ];
 });
+// Setelah data detailTask sudah siap, misalnya setelah fetch selesai:
+watch(
+  () => detailTask.value,
+  (newVal) => {
+    console.log("detailTask:", newVal);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => taskDetail.value,
+  (newVal) => {
+    console.log("taskDetail:", newVal);
+  },
+  { immediate: true }
+);
+
 </script>
 
 <template>

@@ -6,10 +6,11 @@ import { onMounted, inject, ref, watch, computed } from "vue";
 import MyButton from "@components/Button/MyButton.vue";
 import { mdiMagnify, mdiPlus, mdiUpload } from "@mdi/js";
 import MyTextField from "@components/TextField/MyTextField.vue";
-import MyModalSlider from "@components/Slider/MyModalSlider.vue";
 // import formSlider from "./sliders/formSlider.vue";
 import { debounce } from "lodash";
 import MyModal from "@components/Modal/MyModal.vue";
+import MyTextArea from "@components/TextField/MyTextArea.vue";
+import HeaderMaintenanceSlider from "@components/Slider/HeaderMaintenanceSlider.vue";
 import { watchEffect } from "vue";
 import MyChip from "@components/Chip/MyChip.vue";
 
@@ -24,12 +25,34 @@ import { useRouter } from "vue-router";
 import MaintenanceCard from "@components/Slider/MaintenanceSliderCard.vue";
 import moment from "moment-timezone";
 import MyToaster from "@components/Toaster/MyToaster";
+const isModalOpen = ref(false); // untuk mengontrol modal
+const reason = ref(""); // alasan penolakan
+const error = ref(""); // pesan error validasi
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  reason.value = "";
+  error.value = "";
+};
+
+// Tambahkan ini untuk reset setelah sukses decline
+const resetState = () => {
+  isModalOpen.value = false;
+  reason.value = "";
+  error.value = "";
+};
 
 const technicianContext = inject("technicianContext", null);
 if (!technicianContext) {
   throw new Error("technicianContext is not provided!");
 }
-const { getDetail, detailTask, params, approveMaintenance } = technicianContext;
+const {
+  getDetail,
+  detailTask,
+  params,
+  approveMaintenance,
+  declineMaintenance,
+} = technicianContext;
 
 const tableData = ref([]);
 const router = useRouter();
@@ -53,9 +76,10 @@ async function handleDeclineSubmit() {
     error.value = "Reason is required";
     return;
   }
-  await declineMaintenance(maintenanceDetail.value.id, reason.value);
+  await declineMaintenance(detailTask.value.id, reason.value);
   resetState();
 }
+
 
 async function handleApproveSubmit() {
   await approveMaintenance(uuid)
@@ -188,5 +212,38 @@ watchEffect(() => {});
         </MaintenanceCard>
       </div>
     </div>
+    <MyModal :open="isModalOpen" @onClose="closeModal">
+      <template #element>
+        <div class="space-y-4">
+          <!-- Form -->
+          <div class="space-y-2">
+            <HeaderMaintenanceSlider
+              title="Reason"
+              subtitle="Reason for declining the maintenance task"
+              @close="closeModal"
+            />
+            <MyTextArea
+              v-model="reason"
+              label="Reason"
+              placeholder="Enter a reason..."
+              :errorMessage="error"
+              :helperText="error"
+              :maxLength="500"
+            />
+            <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
+          </div>
+
+          <!-- Button -->
+          <div class="flex justify-end">
+            <MyButton
+              class="!bg-red-600 hover:!bg-red-700 text-white"
+              @click="handleDeclineSubmit"
+            >
+              Send
+            </MyButton>
+          </div>
+        </div>
+      </template>
+    </MyModal>
   </div>
 </template>
