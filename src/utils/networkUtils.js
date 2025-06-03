@@ -4,9 +4,7 @@ import { ref } from "vue";
 import MyToaster from "@components/Toaster/MyToaster.vue";
 
 // const toast = useToast();
-const baseURL = import.meta.env.VITE_APP_BASE_URL || "https://telu-monitoring.site/api/monitoring/v1";
-
-console.log("Base URL:", baseURL);
+const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
 export const instance = axios.create({ baseURL });
 

@@ -104,7 +104,7 @@ const routes = [
 
 // Konfigurasi Vue Router
 const router = createRouter({
-  history: createWebHistory('/mobile-technician/'),
+  history: createWebHistory(),
   routes,
 });
 
