@@ -87,45 +87,73 @@ const router = useRouter();
               :values="rooms"
               :onClick="
                 (value) => {
-                  // if (value?.data?.status === 'scheduled') {
-                  //   router.push(`/task/scan/${value?.data?.id}`);
-                  // } else {
                   router.push(`/task/${value?.data?.id}`);
-                  // }
                 }
               "
               @selectionChange="
                 (val) => {
-                  console.log(check);
                   check = val.data?.filter((e) => e.checked);
                 }
               "
               @changePage="handleChangePage"
             >
               <template #header>
-                <MyColumn field="id" header="Id" />
+                <MyColumn field="nama" header="Name equipment" />
                 <MyColumn header="Location" />
-                <MyColumn field="Status" header="Status" />
+                <MyColumn field="status" header="Status" />
               </template>
 
               <template #body="{ rowData }">
-                <MyColumn :rowData="rowData" field="data.name">{{ rowData.data?.id }}</MyColumn>
-                <MyColumn :rowData="rowData" field="location">
-                  <p class="text-sm-regular text-gray/600">
-                    {{ rowData.data?.asset?.name }}
-                    {{ rowData.data?.asset?.room?.location?.name }}
-                    {{ rowData.data?.asset?.room?.name }}
-                  </p>
-                </MyColumn>
-                <MyColumn :rowData="rowData" field="status">
-                  <MyChip
-                    :label="rowData?.data?.status"
-                    :color="rowData?.data?.status ? 'warning' : 'success'"
-                    variant="filled"
-                    size="sm"
-                    rounded="xl"
-                  />
-                </MyColumn>
+                <!-- Jika tipe ticket_pending -->
+                <template v-if="rowData.type === 'ticket_pending'">
+                  <MyColumn :rowData="rowData" field="nama">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.data.asset?.name }} 
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="location">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.data.asset?.room?.location?.name }} 
+                      {{ rowData.data.asset?.room?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="status">
+                    <MyChip
+                      :label="rowData.data.status"
+                      :color="rowData.data.status ? 'warning' : 'success'"
+                      variant="filled"
+                      size="sm"
+                      rounded="xl"
+                    />
+                  </MyColumn>
+                </template>
+
+                <!-- Jika tipe task -->
+                <template v-else-if="rowData.type === 'task'">
+                  <MyColumn :rowData="rowData" field="id">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.data.ticket?.asset?.name }} 
+                    </p></MyColumn>
+                  <MyColumn :rowData="rowData" field="location">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.data.ticket?.asset?.room?.location?.name }} 
+                      {{ rowData.data.ticket?.asset?.room?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="status">
+                    <MyChip
+                      :label="rowData.data.status"
+                      :color="
+                        rowData.data.status === 'scheduled'
+                          ? 'warning'
+                          : 'success'
+                      "
+                      variant="filled"
+                      size="sm"
+                      rounded="xl"
+                    />
+                  </MyColumn>
+                </template>
               </template>
             </MyDataTable>
           </div>

@@ -32,37 +32,36 @@ const dynamicSteps = computed(() => {
       description: "Waiting for admin approval",
     },
     adminRejected: {
-      title: "Admin rejected",
-      description: approvalReason || "Task rejected by Admin",
+      title: "Rejected",
+      description: approvalReason || "Task rejected",
     },
     waitingTechnician: {
-      title: "Waiting for technician approval",
-      description: "Approved by admin, waiting for technician",
+      title: "Waiting Technician Approval",
+      description: "Approved by admin, waiting technician",
     },
-    technicianRejected: {
-      title: "Technician rejected",
-      description: approvalReason || "Task rejected by technician",
+    reschedule: {
+      title: "Reschedule Required",
+      description: "Technician requested a reschedule",
     },
     scheduled: {
       title: "Scheduled",
       description: "Task scheduled for technician",
     },
-    finish: {
-      title: "Finish",
-      description: "Maintenance task completed",
+    completed: {
+      title: "Completed / Verified",
+      description: "Maintenance task completed and verified",
     },
   };
 
   const steps = [];
 
-  // Step 1 selalu Pending (status completed jika sudah lebih dari pending)
+  // Step always starts with Pending
   steps.push({
     ...allSteps.pending,
     status: status === "pending" ? "current" : "completed",
   });
 
-  // Handle rejected by admin: status "rejected" (case insensitive)
-  if ( status === "rejected") {
+  if (status === "rejected") {
     steps.push({
       ...allSteps.adminRejected,
       status: "current",
@@ -71,26 +70,36 @@ const dynamicSteps = computed(() => {
   }
 
   if (
-    status === "waitingtechnician" ||
+    status === "waiting technician approval" ||
+    status === "reschedule required" ||
     status === "scheduled" ||
-    status === "finish"
+    status === "completed / verified"
   ) {
     steps.push({
       ...allSteps.waitingTechnician,
-      status: status === "waitingtechnician" ? "current" : "completed",
+      status: status === "waiting technician approval" ? "current" : "completed",
     });
   }
 
-  if (status === "scheduled" || status === "finish") {
+  // Tampilkan Reschedule Required hanya jika statusnya memang itu
+  if (status === "reschedule required") {
+    steps.push({
+      ...allSteps.reschedule,
+      status: "current",
+    });
+    return steps;
+  }
+
+  if (status === "scheduled" || status === "completed / verified") {
     steps.push({
       ...allSteps.scheduled,
       status: status === "scheduled" ? "current" : "completed",
     });
   }
 
-  if (status === "finish") {
+  if (status === "completed / verified") {
     steps.push({
-      ...allSteps.finish,
+      ...allSteps.completed,
       status: "current",
     });
   }

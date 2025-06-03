@@ -21,9 +21,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
 import { useRouter } from "vue-router";
-import {
-  Scan,
-} from "untitledui-js/vue";
+import { Scan } from "untitledui-js/vue";
 
 const router = useRouter();
 const {
@@ -57,7 +55,6 @@ watchEffect(() => {
   console.log("Current Modal State:", currentModal.value);
 });
 console.log(check);
-
 </script>
 
 <template>
@@ -87,35 +84,34 @@ console.log(check);
           Submitted Maintenance Requests History
         </p>
         <hr class="py-1" />
-       
       </div>
       <div class="flex flex-col gap-4">
         <div class="flex justify-between items-center">
-        <MyTextField
-          id="name"
-          name="name"
-          placeholder="Search"
-          v-model="params.search"
-          :onChangeForm="
-            debounce((event) => (params.search = event.target.value), 500)
-          "
-        >
-          <template #startAdornment>
-            <div class="text-gray/600">
-              <SearchLg color="currentColor" class="size-5 text-gray/600" />
-            </div> </template
-        ></MyTextField>
-        <MyButton
-          class="py-2 px-4 rounded-lg"
-          color="primary"
-          variant="filled"
-          size="sm"
-          @click="router.push('/scanuser')"
-        >
-        <Scan class="w-5 h-5" />
-          <p className="text-sm-semibold">Scan</p>
-        </MyButton>
-      </div>
+          <MyTextField
+            id="name"
+            name="name"
+            placeholder="Search"
+            v-model="params.search"
+            :onChangeForm="
+              debounce((event) => (params.search = event.target.value), 500)
+            "
+          >
+            <template #startAdornment>
+              <div class="text-gray/600">
+                <SearchLg color="currentColor" class="size-5 text-gray/600" />
+              </div> </template
+          ></MyTextField>
+          <MyButton
+            class="py-2 px-4 rounded-lg"
+            color="primary"
+            variant="filled"
+            size="sm"
+            @click="router.push('/scanuser')"
+          >
+            <Scan class="w-5 h-5" />
+            <p className="text-sm-semibold">Scan</p>
+          </MyButton>
+        </div>
         <div
           className="w-full rounded-lg border border-gray-light/200 shadow-shadows/shadow-xs"
         >
@@ -143,24 +139,53 @@ console.log(check);
               </template>
 
               <template #body="{ rowData }">
-                <MyColumn :rowData="rowData">
-                  <p class="text-sm-regular">
-                    {{ rowData.asset?.room?.name }}
-                    {{ rowData.asset?.room?.location?.name }}
-                  </p>
-                </MyColumn>
-                <MyColumn :rowData="rowData">
-                  {{ rowData.asset?.name }}</MyColumn
-                >
-                <MyColumn :rowData="rowData">
-                  <MyChip
-                    :label="rowData.status"
-                    :color="rowData.status ? 'warning' : 'success'"
-                    variant="filled"
-                    size="sm"
-                    rounded="xl"
-                  />
-                </MyColumn>
+                <template v-if="rowData.db_type === 'ticket'">
+                  <MyColumn :rowData="rowData" field="nama">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.asset?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="location">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.asset?.room?.location?.name }}
+                      {{ rowData.asset?.room?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="status">
+                    <MyChip
+                      :label="rowData.status"
+                      :color="rowData.status ? 'warning' : 'success'"
+                      variant="filled"
+                      size="sm"
+                      rounded="xl"
+                    />
+                  </MyColumn>
+                </template>
+
+                <template v-else-if="rowData.db_type === 'task'">
+                  <MyColumn :rowData="rowData" field="id">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.ticket?.asset?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="location">
+                    <p class="text-sm-regular text-gray/600">
+                      {{ rowData.ticket?.asset?.room?.location?.name }}
+                      {{ rowData.ticket?.asset?.room?.name }}
+                    </p>
+                  </MyColumn>
+                  <MyColumn :rowData="rowData" field="status">
+                    <MyChip
+                      :label="rowData.status"
+                      :color="
+                        rowData.status === 'scheduled' ? 'warning' : 'success'
+                      "
+                      variant="filled"
+                      size="sm"
+                      rounded="xl"
+                    />
+                  </MyColumn>
+                </template>
               </template>
             </MyDataTable>
           </div>
