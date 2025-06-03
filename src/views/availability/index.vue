@@ -4,6 +4,9 @@ import { useForm, useFieldArray } from "vee-validate";
 import MyDatePicker from "@components/DatePicker/MyDatePicker.vue";
 import { Plus } from "untitledui-js/vue";
 import MyButton from "@components/Button/MyButton.vue";
+import { ChevronLeft } from "untitledui-js/vue";
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const { createAvailability, getAvability } = inject("availability", {});
 
@@ -40,16 +43,31 @@ onMounted(async () => {
     console.error("Failed to fetch approvals:", error);
   }
 });
+const goBack = () => {
+  router.push('/task');
+};
+
 </script>
 
 <template>
   <form @submit.prevent="onSubmit" class="min-h-dvh flex flex-col bg-white">
     <div class="flex-grow pb-3 gap-3">
-      <p class="text-lg-semibold text-gray/900">Technician Availability</p>
-      <p class="text-sm-regular text-gray/600 pb-2">
-        Set your availability in form.
-      </p>
-      <hr class="py-1" />
+      <div class="flex flex-rows gap-3">
+        <button
+          @click="goBack"
+          class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          aria-label="Kembali ke daftar task"
+        >
+          <ChevronLeft class="h-6 w-6 text-gray-700" />
+        </button>
+        <div class="flex flex-col">
+          <p class="text-lg-semibold text-gray/900">Technician Availability</p>
+          <p class="text-sm-regular text-gray/600 pb-2">
+            Set your availability in form
+          </p>
+        </div>
+      </div>
+      <hr class="py-2" />
 
       <div class="flex flex-col gap-3">
         <template v-for="(field, idx) in availabilities" :key="field.key">
@@ -99,9 +117,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <footer
-      class="flex-none flex items-center justify-end gap-4 border-t border-gray-light/200 px-4 py-4"
-    >
+    <footer class="sticky bottom-0 bg-white border-t border-gray-light/200 px-4 py-4 flex items-center justify-end gap-4">
+
       <MyButton
         type="submit"
         color="primary"
