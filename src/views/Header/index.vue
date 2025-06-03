@@ -4,7 +4,7 @@
       <img
         src="../../assets/images/Logo.png"
         alt="App Logo"
-        class="w-[90px] h-[60px]"
+        class="w-[85px] h-[65px]"
       />
     </div>
 

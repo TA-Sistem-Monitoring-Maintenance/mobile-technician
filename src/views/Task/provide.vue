@@ -134,6 +134,20 @@ const getDetail = async (body) => {
     })
     .catch(MyToaster);
 };
+const declineMaintenance = async (id, reason) => {
+  const formData = new FormData();
+  formData.append("reason", reason);
+  formData.append("approved", false);
+  try {
+    const response = await Service.approveMaintenance(id, formData);
+    MyToaster({ type: "success", message: "Task declined successfully" });
+    handleCurrentSlider({ status: false, current: null });
+    return response;
+  } catch (error) {
+    MyToaster({ type: "error", message: "Failed to decline task" });
+    throw error;
+  }
+};
 
 const checkRoom = async (id, body) => {
   const formData = new FormData();
@@ -222,6 +236,7 @@ provide("technicianContext", {
   getDetail,
   detailTask,
   handleSubmitForm,
+  declineMaintenance,
 });
 </script>
 

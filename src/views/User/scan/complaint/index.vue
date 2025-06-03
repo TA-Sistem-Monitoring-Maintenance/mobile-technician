@@ -25,6 +25,14 @@ import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 import { Service } from "./service";
 import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const goToHistory = () => {
+  router.push("/history");
+};
+
 const route = useRoute();
 const selectedRoom = ref(null);
 
@@ -173,7 +181,7 @@ watchEffect(async () => {
           />
         </div>
         <div class="flex justify-end gap-2">
-          <MyButton color="secondary" variant="outlined" size="md">
+          <MyButton color="secondary" variant="outlined" size="md" @click="goToHistory">
             <p class="text-sm-semibold">History</p>
           </MyButton>
           <MyButton
