@@ -4,6 +4,7 @@ import vuetify from "vite-plugin-vuetify"; // Import Vuetify Vite plugin
 import path from "path";
 
 export default defineConfig({
+  base: '/mobile-technician/',
   plugins: [
     vue(),
     vuetify(), // Add the Vuetify plugin here
