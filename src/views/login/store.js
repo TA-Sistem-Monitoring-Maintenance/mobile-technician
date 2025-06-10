@@ -33,8 +33,8 @@ export async function handleLogin(body) {
           "Content-Type": "multipart/form-data",
           "Time-Zone": timeZone,
         },
-      }
-    );
+      }
+    );
 
     // Show success message using toaster
     MyToaster({
@@ -52,7 +52,7 @@ export async function handleLogin(body) {
       body.router.push("/task");
     } else {
       body.router.push("/history");
-    }
+    }
   } catch (error) {
     MyToaster({
       message: error.response?.data?.message || error.message || "Login failed",
@@ -77,9 +77,10 @@ export async function handleSignUp(body) {
     formData.append("name", body.name);
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    console.log("yang ini jalan");
 
     const response = await axios.post(
-      "http://localhost:3000/monitoring/v1/mobile/auth/register", // Adjust URL for registration
+      "https://telu-monitoring.site/api/monitoring/v1/mobile/auth/register", // Adjust URL for registration
       formData,
       {
         headers: {

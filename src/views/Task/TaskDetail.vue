@@ -80,7 +80,6 @@ async function handleDeclineSubmit() {
   resetState();
 }
 
-
 async function handleApproveSubmit() {
   await approveMaintenance(uuid)
     .then(MyToaster)
@@ -95,17 +94,26 @@ const taskDetail = computed(() => {
     { label: "Status", value: detailTask?.value?.status || "-" },
     {
       label: "Room",
-      value: detailTask?.value?.ticket?.asset?.room?.name || detailTask?.value?.asset?.room?.name,
+      value:
+        detailTask?.value?.ticket?.asset?.room?.name ||
+        detailTask?.value?.asset?.room?.name,
     },
     {
       label: "Location",
-      value: detailTask?.value?.ticket?.asset?.room?.location?.name || detailTask?.value?.asset?.room?.location?.name,
+      value:
+        detailTask?.value?.ticket?.asset?.room?.location?.name ||
+        detailTask?.value?.asset?.room?.location?.name,
     },
     {
       label: "Equipment",
-      value: detailTask?.value?.ticket?.asset?.name || detailTask?.value?.asset?.name,
+      value:
+        detailTask?.value?.ticket?.asset?.name ||
+        detailTask?.value?.asset?.name,
     },
-    { label: "Category", value: detailTask?.value?.ticket?.type || detailTask?.value?.type },
+    {
+      label: "Category",
+      value: detailTask?.value?.ticket?.type || detailTask?.value?.type,
+    },
     {
       label: "Schedule at",
       value:
@@ -115,10 +123,9 @@ const taskDetail = computed(() => {
         " - " +
         moment(detailTask?.value?.schedule?.end_time).format("DD/M/YY HH:mm"),
     },
+    { label: "Evidence", value: detailTask?.value.attachments || "-" },
   ];
 });
-
-console.log("Task Detail:", detailTask.value.status);
 
 watchEffect(() => {});
 </script>
