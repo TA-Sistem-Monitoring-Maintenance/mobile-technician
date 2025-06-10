@@ -111,44 +111,41 @@ const validateRoom = async (scannedId) => {
     router.push("/notmatchuser");
   }
 };
-
 </script>
 
 <template>
-  <simplebar class="h-full" forceVisible="y" autoHide="{false}">
-    <div class="bg-white">
-      <div class="flex flex-rows gap-3">
-        <button
-          @click="router.push('/history')"
-          class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          aria-label="Kembali ke daftar task"
-        >
-          <ChevronLeft class="h-6 w-6 text-gray-700" />
-        </button>
-        <div class="flex flex-col">
-          <p class="text-lg-semibold text-gray/900">Scan QR Code</p>
-          <p class="text-sm-regular text-gray/600 pb-2">
-            Scan qr code in the room of the task
-          </p>
-        </div>
+  <div class="bg-white">
+    <div class="flex flex-rows gap-3">
+      <button
+        @click="router.push('/history')"
+        class="p-1 mr-2 rounded-md hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        aria-label="Kembali ke daftar task"
+      >
+        <ChevronLeft class="h-6 w-6 text-gray-700" />
+      </button>
+      <div class="flex flex-col">
+        <p class="text-lg-semibold text-gray/900">Scan QR Code</p>
+        <p class="text-sm-regular text-gray/600 pb-2">
+          Scan qr code in the room of the task
+        </p>
       </div>
-      <hr class="py-2" />
-      <div class="flex flex-col gap-4">
-        <div class="flex justify-center">
-          <div class="scanner-container">
-            <video
-              ref="video"
-              class="camera-feed"
-              muted
-              autoplay
-              playsinline
-            ></video>
-            <div class="result" v-if="result">Result: {{ result }}</div>
-          </div>
+    </div>
+    <hr class="py-2" />
+    <div class="flex flex-col gap-4">
+      <div class="flex justify-center">
+        <div class="scanner-container">
+          <video
+            ref="video"
+            class="camera-feed"
+            muted
+            autoplay
+            playsinline
+          ></video>
+          <div class="result" v-if="result">Result: {{ result }}</div>
         </div>
       </div>
     </div>
-  </simplebar>
+  </div>
 </template>
 
 <style scoped>

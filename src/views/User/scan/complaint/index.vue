@@ -106,9 +106,7 @@ watchEffect(async () => {
         <p class="text-lg-semibold text-gray/900">
           Maintenance Submission Form
         </p>
-        <p class="text-sm-regular text-gray/600 pb-2">
-          maintenance requests
-        </p>
+        <p class="text-sm-regular text-gray/600 pb-2">maintenance requests</p>
         <hr class="py-1" />
       </div>
       <div class="flex flex-col gap-4">
@@ -148,7 +146,7 @@ watchEffect(async () => {
           </label>
           <MyAsyncDropdown
             class="w-full"
-            name="Asset"
+            name="asset"
             :placeholder="'Select Equipment'"
             v-model="asset"
             :extraData="selectedRoom?.id"
@@ -181,7 +179,12 @@ watchEffect(async () => {
           />
         </div>
         <div class="flex justify-end gap-2">
-          <MyButton color="secondary" variant="outlined" size="md" @click="goToHistory">
+          <MyButton
+            color="secondary"
+            variant="outlined"
+            size="md"
+            @click="goToHistory"
+          >
             <p class="text-sm-semibold">History</p>
           </MyButton>
           <MyButton

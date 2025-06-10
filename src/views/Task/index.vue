@@ -55,116 +55,115 @@ const router = useRouter();
 </script>
 
 <template>
-  <simplebar class="h-full" forceVisible="y" autoHide="{false}">
-    <div class="bg-white">
-      <div class="pb-3 gap-3">
-        <p class="text-lg-semibold text-gray/900">Task Maintenance</p>
-        <p class="text-sm-regular text-gray/600 pb-2">
-          Task list for technicians to work on
-        </p>
-        <hr class="py-1" />
-      </div>
-      <div class="flex flex-col gap-4">
-        <MyTextField
-          id="name"
-          name="name"
-          placeholder="Search"
-          v-model="params.search"
-          :onChangeForm="
-            debounce((event) => (params.search = event.target.value), 500)
-          "
-        >
-          <template #startAdornment>
-            <div class="text-gray/600">
-              <SearchLg color="currentColor" class="size-5 text-gray/600" />
-            </div> </template
-        ></MyTextField>
-        <div
-          className="w-full rounded-lg border border-gray-light/200 shadow-shadows/shadow-xs"
-        >
-          <div class="">
-            <MyDataTable
-              :values="rooms"
-              :onClick="
-                (value) => {
-                  router.push(`/task/${value?.data?.id}`);
-                }
-              "
-              @selectionChange="
-                (val) => {
-                  check = val.data?.filter((e) => e.checked);
-                }
-              "
-              @changePage="handleChangePage"
-            >
-              <template #header>
-                <MyColumn field="nama" header="Name equipment" />
-                <MyColumn header="Location" />
-                <MyColumn field="status" header="Status" />
+  <div class="bg-white">
+    <div class="pb-3 gap-3">
+      <p class="text-lg-semibold text-gray/900">Task Maintenance</p>
+      <p class="text-sm-regular text-gray/600 pb-2">
+        Task list for technicians to work on
+      </p>
+      <hr class="py-1" />
+    </div>
+    <div class="flex flex-col gap-4">
+      <MyTextField
+        id="name"
+        name="name"
+        placeholder="Search"
+        v-model="params.search"
+        :onChangeForm="
+          debounce((event) => (params.search = event.target.value), 500)
+        "
+      >
+        <template #startAdornment>
+          <div class="text-gray/600">
+            <SearchLg color="currentColor" class="size-5 text-gray/600" />
+          </div> </template
+      ></MyTextField>
+      <div
+        className="w-full rounded-lg border border-gray-light/200 shadow-shadows/shadow-xs"
+      >
+        <div class="">
+          <MyDataTable
+            :values="rooms"
+            :onClick="
+              (value) => {
+                router.push(`/task/${value?.data?.id}`);
+              }
+            "
+            @selectionChange="
+              (val) => {
+                check = val.data?.filter((e) => e.checked);
+              }
+            "
+            @changePage="handleChangePage"
+          >
+            <template #header>
+              <MyColumn field="nama" header="Name equipment" />
+              <MyColumn header="Location" />
+              <MyColumn field="status" header="Status" />
+            </template>
+
+            <template #body="{ rowData }">
+              <!-- Jika tipe ticket_pending -->
+              <template v-if="rowData.type === 'ticket_pending'">
+                <MyColumn :rowData="rowData" field="nama">
+                  <p class="text-sm-regular text-gray/600">
+                    {{ rowData.data.asset?.name }}
+                  </p>
+                </MyColumn>
+                <MyColumn :rowData="rowData" field="location">
+                  <p class="text-sm-regular text-gray/600">
+                    {{ rowData.data.asset?.room?.location?.name }}
+                    {{ rowData.data.asset?.room?.name }}
+                  </p>
+                </MyColumn>
+                <MyColumn :rowData="rowData" field="status">
+                  <MyChip
+                    :label="rowData.data.status"
+                    :color="rowData.data.status ? 'warning' : 'success'"
+                    variant="filled"
+                    size="sm"
+                    rounded="xl"
+                  />
+                </MyColumn>
               </template>
 
-              <template #body="{ rowData }">
-                <!-- Jika tipe ticket_pending -->
-                <template v-if="rowData.type === 'ticket_pending'">
-                  <MyColumn :rowData="rowData" field="nama">
-                    <p class="text-sm-regular text-gray/600">
-                      {{ rowData.data.asset?.name }} 
-                    </p>
-                  </MyColumn>
-                  <MyColumn :rowData="rowData" field="location">
-                    <p class="text-sm-regular text-gray/600">
-                      {{ rowData.data.asset?.room?.location?.name }} 
-                      {{ rowData.data.asset?.room?.name }}
-                    </p>
-                  </MyColumn>
-                  <MyColumn :rowData="rowData" field="status">
-                    <MyChip
-                      :label="rowData.data.status"
-                      :color="rowData.data.status ? 'warning' : 'success'"
-                      variant="filled"
-                      size="sm"
-                      rounded="xl"
-                    />
-                  </MyColumn>
-                </template>
-
-                <!-- Jika tipe task -->
-                <template v-else-if="rowData.type === 'task'">
-                  <MyColumn :rowData="rowData" field="id">
-                    <p class="text-sm-regular text-gray/600">
-                      {{ rowData.data.ticket?.asset?.name }} 
-                    </p></MyColumn>
-                  <MyColumn :rowData="rowData" field="location">
-                    <p class="text-sm-regular text-gray/600">
-                      {{ rowData.data.ticket?.asset?.room?.location?.name }} 
-                      {{ rowData.data.ticket?.asset?.room?.name }}
-                    </p>
-                  </MyColumn>
-                  <MyColumn :rowData="rowData" field="status">
-                    <MyChip
-                      :label="rowData.data.status"
-                      :color="
-                        rowData.data.status === 'scheduled'
-                          ? 'warning'
-                          : 'success'
-                      "
-                      variant="filled"
-                      size="sm"
-                      rounded="xl"
-                    />
-                  </MyColumn>
-                </template>
+              <!-- Jika tipe task -->
+              <template v-else-if="rowData.type === 'task'">
+                <MyColumn :rowData="rowData" field="id">
+                  <p class="text-sm-regular text-gray/600">
+                    {{ rowData.data.ticket?.asset?.name }}
+                  </p></MyColumn
+                >
+                <MyColumn :rowData="rowData" field="location">
+                  <p class="text-sm-regular text-gray/600">
+                    {{ rowData.data.ticket?.asset?.room?.location?.name }}
+                    {{ rowData.data.ticket?.asset?.room?.name }}
+                  </p>
+                </MyColumn>
+                <MyColumn :rowData="rowData" field="status">
+                  <MyChip
+                    :label="rowData.data.status"
+                    :color="
+                      rowData.data.status === 'scheduled'
+                        ? 'warning'
+                        : 'success'
+                    "
+                    variant="filled"
+                    size="sm"
+                    rounded="xl"
+                  />
+                </MyColumn>
               </template>
-            </MyDataTable>
-          </div>
+            </template>
+          </MyDataTable>
         </div>
-        <div class="flex">
-          <!-- <RoomActions class="bg-white px-8" />
+      </div>
+      <div class="flex">
+        <!-- <RoomActions class="bg-white px-8" />
           {{ rooms.value }} -->
 
-          <!-- Table -->
-        </div>
+        <!-- Table -->
       </div>
     </div>
-  </simplebar>
+  </div>
 </template>
