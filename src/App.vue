@@ -25,7 +25,7 @@ async function getSession() {
   try {
     const response = await Service.getSession();
     console.log(response);
-    return response; // Return response to be used in provide.vue
+    return response; 
   } catch (error) {
     console.error("Error fetching session:", error);
   }
