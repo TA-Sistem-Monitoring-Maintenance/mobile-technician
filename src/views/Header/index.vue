@@ -67,7 +67,7 @@ import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { Menu02 } from "untitledui-js/vue";
 import VueCookies from "vue-cookies";
-import getSession  from "../../App.vue"; // Adjust the import path as necessary
+// import getSession  from "../../App.vue"; // Adjust the import path as necessary
 
 const router = useRouter();
 const isDropdownOpen = ref(false);
@@ -134,21 +134,19 @@ function logout() {
   isDropdownOpen.value = false;
   router.push("/login");
 }
-const user = null
-onMounted(() => {
-  getSession().then((response) => {
-    if (response && response.data) {
-      user.value = response.data.user; 
-      console.log('user di header',response);// Assuming the user data is in response.data.user
-    } else {
-      console.error("No user data found in session response");
-    }
-  }).catch((error) => {
-    console.error("Error fetching session:", error);
-  });
-});
-
-
+const user = null;
+// onMounted(() => {
+//   getSession().then((response) => {
+//     if (response && response.data) {
+//       user.value = response.data.user;
+//       console.log('user di header',response);// Assuming the user data is in response.data.user
+//     } else {
+//       console.error("No user data found in session response");
+//     }
+//   }).catch((error) => {
+//     console.error("Error fetching session:", error);
+//   });
+// });
 </script>
 
 <style scoped>
