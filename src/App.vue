@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, reactive, provide } from "vue";
 import { useRouter } from "vue-router";
 import Header from "./views/Header/index.vue";
 import { get } from "./utils/networkUtils";
@@ -20,16 +20,6 @@ const Service = {
 const checkAuth = () => {
   isAuthenticated.value = !!getCookie("tokenMonitoringMobile");
 };
-async function getSession() {
-  console.log("session jalan");
-  try {
-    const response = await Service.getSession();
-    console.log(response);
-    return response; 
-  } catch (error) {
-    console.error("Error fetching session:", error);
-  }
-}
 
 let authInterval = null;
 
@@ -61,6 +51,28 @@ const logout = () => {
   checkAuth();
   router.push("/login");
 };
+
+const session = reactive({
+  id: null,
+  name: null,
+  email: null,
+  role: null,
+});
+
+provide("session", session);
+
+async function getSession() {
+  try {
+    const { data } = await get("mobile/auth/session");
+    // assign _directly_ on the reactive object:
+    session.id = data.id;
+    session.name = data.name;
+    session.email = data.email;
+    session.role = data.role;
+  } catch (e) {
+    console.error("Error fetching session:", e);
+  }
+}
 </script>
 
 <template>

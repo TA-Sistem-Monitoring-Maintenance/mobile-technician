@@ -41,6 +41,7 @@
         Profile
       </a>
       <a
+        v-if="hasAccess('Mobile')"
         href="#"
         @click.prevent="goToAvailability"
         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -61,13 +62,29 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, onBeforeUnmount, onMounted } from "vue";
+import {
+  ref,
+  watch,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  inject,
+} from "vue";
 import { createPopper } from "@popperjs/core";
 import { onClickOutside } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { Menu02 } from "untitledui-js/vue";
 import VueCookies from "vue-cookies";
-// import getSession  from "../../App.vue"; // Adjust the import path as necessary
+
+const session = inject("session");
+
+function hasAccess(menuName) {
+  return (
+    Array.isArray(session.role?.role_menus) &&
+    session.role.role_menus.some((m) => m.menu === menuName)
+  );
+}
 
 const router = useRouter();
 const isDropdownOpen = ref(false);
