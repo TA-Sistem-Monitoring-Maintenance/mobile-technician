@@ -192,7 +192,7 @@ watchEffect(() => {});
             </MyButton>
 
             <MyButton
-              v-if="status === 'scheduled'"
+              v-if="status === 'Scheduled'"
               color="success"
               :disabled="
                 detailTask?.value?.status === 'Waiting technician approval'
