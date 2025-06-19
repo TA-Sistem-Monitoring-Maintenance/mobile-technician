@@ -24,7 +24,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 import { useRouter } from "vue-router";
-import MyCheckBox from "../../../../backoffice/src/components/Check/MyCheckBox.vue";
+import MyCheckBox from "@components/Check/MyCheckBox.vue";
 
 const {
   handleCurrentSlider,
