@@ -178,7 +178,9 @@ watchEffect(async () => {
             :onChange="handleFilesChange"
           />
         </div>
-        <div class="flex justify-end gap-2">
+        <div
+          class="sticky bottom-0 left-0 right-0 bg-white z-10 shadow-t px-4 py-3 flex justify-end gap-2 border-t"
+        >
           <MyButton
             color="secondary"
             variant="outlined"
