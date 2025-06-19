@@ -24,6 +24,7 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 import { FilterLines } from "untitledui-js/vue";
 import MyDropzone from "@components/Dropzone/MyDropzone.vue";
 import { useRouter } from "vue-router";
+import MyCheckBox from "../../../../backoffice/src/components/Check/MyCheckBox.vue";
 
 const {
   handleCurrentSlider,
@@ -53,6 +54,25 @@ const handleFilesChange = (files) => {
   selectedImages.value = files;
 };
 
+const assets = [
+  {
+    id: "idsfjldskljk-dsfiodsjfs",
+    name: "AC",
+  },
+  {
+    id: "idsfjlddsskljk-dsfiodsjfs",
+    name: "TV",
+  },
+  {
+    id: "idsfjldskqq-dsfiodsjfs",
+    name: "Kursi 2",
+  },
+  {
+    id: "idsfjldsk-dsfiodsjfs",
+    name: "Kursi 1",
+  },
+];
+
 onMounted(async () => {
   console.log("jalan");
   try {
@@ -80,95 +100,45 @@ watch(selectedAsset, (newVal) => {
   console.log("selectedRoom changed:", selectedRoom.value);
   console.log("selectedLocation changed:", selectedLocation.value);
 });
+console.log("checklist jalan");
 </script>
 
 <template>
-  <MyModalSlider
-    :open="currentSlider?.current === 'detail-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><DetailSlider /> </template>
-  </MyModalSlider>
-  <MyModalSlider
-    :open="currentSlider?.current === 'form-slider'"
-    :onClose="() => handleCurrentSlider(null)"
-  >
-    <template #element><formSlider /> </template>
-  </MyModalSlider>
-  <!-- <simplebar v-if="loaded" class="h-full" forceVisible="y" autoHide="{false}"> -->
   <div class="bg-white">
     <div class="pb-3 gap-3">
-      <p class="text-lg-semibold text-gray/900">Proof of work</p>
+      <p class="text-lg-semibold text-gray/900">Checklist Assets</p>
       <p class="text-sm-regular text-gray/600 pb-2">
-        Proof form for completing the task
+        Checklist all the assets in the room.
       </p>
       <hr class="py-1" />
     </div>
     <div class="flex flex-col gap-4">
-      <div class="flex flex-col gap-2">
-        <label
-          class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
-        >
-          Location
-        </label>
-        <MyAsyncDropdown
-          class="w-full"
-          name="Location"
-          :disabled="true"
-          :v-model="selectedLocation"
-          :modelValue="selectedLocation"
-          :placeholder="'Select Location'"
-        />
+      <div class="flex justify-end pr-3">
+        <p class="text-sm-semibold text-blue/500">Check All</p>
       </div>
-      <div class="flex flex-col gap-2">
-        <label
-          class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
-        >
-          Room
-        </label>
-        <MyAsyncDropdown
-          class="w-full"
-          name="Room"
-          :disabled="true"
-          :modelValue="selectedRoom"
-          :placeholder="'Select Room'"
+      <div
+        v-for="asset in assets"
+        :key="asset.id"
+        class="flex items-start gap-y-2 gap-x-3"
+      >
+        <MyCheckBox
+          :checked="assets.includes(asset.id)"
+          @change="() => toggleAccess(asset.id)"
+          class="pt-1"
         />
-      </div>
-      <div class="flex flex-col gap-2">
-        <label
-          class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
-        >
-          Equipment
-        </label>
-        <MyAsyncDropdown
-          class="w-full"
-          name="asset"
-          :disabled="true"
-          :modelValue="selectedAsset"
-          :placeholder="'Select Equipment'"
-        />
-      </div>
-      <div class="flex flex-col gap-2">
-        <label
-          class="text-sm-medium text-gray/700 after:text-red/600 after:content-['*']"
-        >
-          Description
-        </label>
-        <MyTextArea
-          placeholder="Enter a reason..."
-          :maxLength="500"
-          v-model="description"
-        />
-      </div>
-      <div class="flex flex-col gap-2">
-        <MyDropzone
-          ref="dropzoneRef"
-          :accept="['.jpg', '.jpeg', '.png', '.gif']"
-          :multiple="true"
-          :maxSize="2_500_000"
-          :showImage="true"
-          :onChange="handleFilesChange"
-        />
+
+        <div class="flex flex-col">
+          <p :for="`asset-${asset.id}`" class="text-sm-semibold text-gray/600">
+            {{ asset.name }}
+          </p>
+          <div class="w-full">
+            <MyTextArea
+              placeholder="Enter a description..."
+              :maxLength="500"
+              v-model="description"
+            />
+          </div>
+        </div>
       </div>
       <div
         class="sticky bottom-0 left-0 right-0 bg-white z-10 shadow-t px-4 py-3 flex justify-end gap-2 border-t"
@@ -197,5 +167,4 @@ watch(selectedAsset, (newVal) => {
       </div>
     </div>
   </div>
-  <!-- </simplebar> -->
 </template>

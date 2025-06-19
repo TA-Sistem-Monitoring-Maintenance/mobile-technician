@@ -17,6 +17,7 @@ import NotMatch from "../views/Task/notMatch.vue";
 import FormTechnician from "../views/Task/formTechnician.vue";
 // import Detail from "../views/User/scan/history/detail/detailHistory.vue";
 import Availability from "../views/availability/provide.vue";
+import checklist from "../views/Task/checklist.vue";
 
 // Definisi Rute
 const routes = [
@@ -62,6 +63,7 @@ const routes = [
       },
       { path: "scan/:id/not-match", component: NotMatch },
       { path: "scan/:id/work-submission", component: FormTechnician },
+      { path: "scan/:id/checklist-submission", component: checklist },
     ],
   },
   {
