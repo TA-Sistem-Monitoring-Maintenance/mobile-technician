@@ -171,7 +171,7 @@ watchEffect(async () => {
         <MyDropzone
           ref="dropzoneRef"
           :multiple="true"
-          :maxSize="2_500_000"
+          :maxSize="2_500_000_0"
           :showImage="true"
           :onChange="handleFilesChange"
         />
