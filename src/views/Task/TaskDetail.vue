@@ -81,11 +81,11 @@ async function handleDeclineSubmit() {
 }
 
 async function handleApproveSubmit() {
-  await approveMaintenance(uuid)
-    .then(MyToaster)
-    .catch((err) => {
-      MyToaster({ type: "error", message: "Failed to approve maintenance" });
-    });
+  await approveMaintenance(uuid);
+  // .then(MyToaster)
+  // .catch((err) => {
+  //   MyToaster({ type: "error", message: "Failed to approve maintenance" });
+  // });
 }
 
 const taskDetail = computed(() => {
