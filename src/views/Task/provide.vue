@@ -166,10 +166,11 @@ const deleteRoom = async (data) =>
 const approveMaintenance = async (id) => {
   const formData = new FormData();
   formData.append("approved", true);
-  return Service.approveMaintenance(id, formData)
+  const response = Service.approveMaintenance(id, formData)
     .then(MyToaster)
-    .then(() => handleCurrentSlider({ status: false, current: null }))
     .catch(MyToaster);
+  // if(response)
+  return response;
 };
 
 const handleSubmitForm = async (body) => {
