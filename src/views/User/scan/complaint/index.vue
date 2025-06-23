@@ -171,10 +171,13 @@ watchEffect(async () => {
         <MyDropzone
           ref="dropzoneRef"
           :multiple="true"
-          :maxSize="2_500_000_0"
+          :maxSize="25_000_000"
           :showImage="true"
           :onChange="handleFilesChange"
+          accept="image/*"
+          capture="environment"
         />
+        <!-- <MyDropzone type="photo" :multiple="false" maxSize="25000000" /> -->
       </div>
       <div
         class="sticky bottom-0 left-0 right-0 bg-white z-10 shadow-t px-4 py-3 flex justify-end gap-2 border-t"
