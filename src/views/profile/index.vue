@@ -23,7 +23,7 @@ import { FilterLines } from "untitledui-js/vue";
 import { Camera01 } from "untitledui-js/vue";
 import { ChevronLeft } from "untitledui-js/vue";
 import router from "../../router";
-const { showProfile, updateProfile, handleFileUpload, profilePicture } = inject(
+const { showProfile, updateProfile, profilePicture } = inject(
   "profileContext",
   {}
 );
@@ -34,15 +34,16 @@ const profileData = ref({
   email: "",
   whatsapp: "",
 });
+var file = ref();
 onMounted(async () => {
   const response = await showProfile();
   profileData.value = {
     name: response.data.name,
     email: response.data.email,
     whatsapp: response.data.whatsapp,
-    role: response.data.role?.name || "Teknisi",
+    role: response.data.role?.name || "User",
   };
-  profilePicture.value = response.data.profilePicture;
+  profilePicture.value = response.data.full_photo_url;
 });
 
 const handleSave = async () => {
@@ -51,6 +52,16 @@ const handleSave = async () => {
     alert("Profile berhasil diperbarui.");
   } catch (error) {
     alert("Gagal memperbarui profile.");
+  }
+};
+
+const handleFileUpload = (event) => {
+  file = event.target.files[0];
+  console.log(file);
+  if (file?.type.startsWith("image/")) {
+    profilePicture.value = URL.createObjectURL(file);
+  } else {
+    console.error("Uploaded file is not an image.");
   }
 };
 
@@ -165,7 +176,14 @@ const goBack = () => {
               color="primary"
               variant="filled"
               size="md"
-              @click="handleSave"
+              @click="
+                updateProfile({
+                  name: profileData?.name,
+                  email: profileData?.email,
+                  whatsapp: profileData?.whatsapp,
+                  file: file,
+                })
+              "
             >
               <p class="text-sm-semibold">Save changes</p>
             </MyButton>

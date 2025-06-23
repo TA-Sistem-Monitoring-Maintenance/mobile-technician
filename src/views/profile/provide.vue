@@ -6,6 +6,7 @@ import Index from "./index.vue";
 import { debounce } from "lodash";
 import VueCookies from "vue-cookies";
 import { Service } from "./service";
+import MyToaster from "../../../../backoffice/src/components/Toaster/MyToaster";
 const profile = ref({});
 const profilePicture = ref(null);
 const currentSlider = ref({
@@ -35,12 +36,20 @@ async function showProfile() {
 
 async function updateProfile(data) {
   try {
-    const response = await Service.updateProfile(data);
-    alert("Profile updated successfully!");
-    return response;
+    console.log("jalal", data);
+    const formData = new FormData();
+
+    formData.append("name", data?.name);
+    formData.append("email", data?.email);
+    formData.append("whatsapp", data?.whatsapp);
+    formData.append("photo_url", data?.file);
+    await Service.update(formData)
+      .then(MyToaster)
+      .catch(MyToaster)
+      .then(showProfile);
   } catch (error) {
     console.error("Failed to update profile:", error);
-    throw error;
+    throw error; // Re-throw error so it can be handled in the component
   }
 }
 
