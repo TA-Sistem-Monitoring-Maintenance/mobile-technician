@@ -174,7 +174,7 @@ watchEffect(async () => {
           :maxSize="25_000_000"
           :showImage="true"
           :onChange="handleFilesChange"
-          accept="image/*"
+          :accept="['.png', '.jpg', '.jpeg']"
           capture="environment"
         />
         <!-- <MyDropzone type="photo" :multiple="false" maxSize="25000000" /> -->
