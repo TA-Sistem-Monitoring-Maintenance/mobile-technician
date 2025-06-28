@@ -89,6 +89,7 @@ async function handleApproveSubmit() {
 }
 
 const taskDetail = computed(() => {
+  console.log("Maintenance Details:", detailTask?.value);
   return [
     { label: "ID", value: detailTask?.value?.id || "-" },
     { label: "Status", value: detailTask?.value?.status || "-" },
@@ -106,9 +107,10 @@ const taskDetail = computed(() => {
     },
     {
       label: "Equipment",
-      value:
-        detailTask?.value?.ticket?.asset?.name ||
-        detailTask?.value?.asset?.name,
+      value: detailTask?.value?.assetChecks
+        ? "All assets"
+        : detailTask?.value?.ticket?.asset?.name ||
+          detailTask?.value?.asset?.name,
     },
     {
       label: "Category",
@@ -182,7 +184,7 @@ watchEffect(() => {});
             <MyButton
               color="primary"
               :disabled="
-                taskDetail?.value?.status === 'Waiting technician approval'
+                taskDetail?.value?.status !== 'Waiting technician approval'
               "
               variant="filled"
               class="flex justify-start"

@@ -75,8 +75,12 @@ watchEffect(async () => {
     console.log(`Result is "${currentResult}". Navigating via watchEffect...`);
     const data = await checkRoom(uuid, currentResult); // Directly await the promise
     console.log("Room check successful:", data);
-    if (data === "success") {
-      router.push(`${uuid}/work-submission`);
+    if (data?.data === "success") {
+      if (data?.type === "Complaint") {
+        router.push(`${uuid}/work-submission`);
+      } else {
+        router.push(`${uuid}/checklist-submission`);
+      }
     } else {
       router.push(`${uuid}/not-match`);
     }

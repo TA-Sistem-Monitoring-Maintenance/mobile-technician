@@ -76,7 +76,7 @@ async function getSession() {
 </script>
 
 <template>
-  <div class="bg-gray/100 sm:px-4 md:px-6 h-dvh">
+  <div class="bg-gray/100 sm:px-4 md:px-6 h-full">
     <div class="mx-auto max-w-[425px] bg-white px-3 h-full">
       <div v-if="shouldShowNavbar">
         <Header />
