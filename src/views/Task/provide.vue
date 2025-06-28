@@ -16,6 +16,10 @@ const currentSlider = ref({
   status: false,
 });
 
+const id = window.location.pathname;
+const parts = id.split("/");
+const uuid = parts[parts.length - 1];
+
 const currentModal = ref({
   current: "",
   status: false,
@@ -126,7 +130,6 @@ const downloadTemplateImport = () => {
 };
 
 const getDetail = async (body) => {
-  console.log("detail jalan");
   return Service.detaildata(body)
     .then((response) => {
       detailTask.value = response.data;
@@ -134,6 +137,15 @@ const getDetail = async (body) => {
     })
     .catch(MyToaster);
 };
+
+const getAllAssets = async (id) => {
+  return Service.getAllAssets(id)
+    .then((response) => {
+      return response;
+    })
+    .catch(MyToaster);
+};
+
 const declineMaintenance = async (id, reason) => {
   const formData = new FormData();
   formData.append("reason", reason);
@@ -153,7 +165,7 @@ const checkRoom = async (id, body) => {
   const formData = new FormData();
   formData.append("room_id", body);
   return await Service.checkRoom(id, formData)
-    .then((res) => res.data)
+    .then((res) => res)
     .catch(MyToaster);
 };
 
@@ -168,6 +180,7 @@ const approveMaintenance = async (id) => {
   formData.append("approved", true);
   const response = Service.approveMaintenance(id, formData)
     .then(MyToaster)
+    .then(getDetail(uuid))
     .catch(MyToaster);
   // if(response)
   return response;
@@ -205,6 +218,10 @@ const handleSubmitForm = async (body) => {
   }
 };
 
+const handleSubmitFormChecklist = async (body) => {
+  console.log(body);
+};
+
 watch(
   () => params,
   debounce(() => {
@@ -224,6 +241,8 @@ provide("technicianContext", {
   handleCurrentModal,
   currentModal,
   check,
+  handleSubmitFormChecklist,
+  getAllAssets,
   searchGrade,
   searchRoom,
   dropzoneRef,

@@ -7,4 +7,5 @@ export const Service = {
   approveMaintenance: (id, body) => patch(`/mobile/technician/${id}`, body),
   submitForm: (id, body) =>
     post(`/mobile/technician/upload/${id}`, body, "form-data"),
+  getAllAssets: (id) => get(`/mobile/technician/${id}/assets`),
 };
