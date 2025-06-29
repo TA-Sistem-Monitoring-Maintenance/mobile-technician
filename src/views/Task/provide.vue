@@ -219,7 +219,20 @@ const handleSubmitForm = async (body) => {
 };
 
 const handleSubmitFormChecklist = async (body) => {
-  console.log(body);
+  const formData = new FormData();
+  console.log("body", body);
+  body.checklistData.forEach((item, i) => {
+    formData.append(`checklist[${i}][asset_check_id]`, item.id);
+    formData.append(`checklist[${i}][checked]`, String(item.checked)); // FormData values are strings
+    if (item.remarks !== undefined && item.remarks !== null) {
+      formData.append(`checklist[${i}][remarks]`, item.remarks);
+    }
+  });
+  response = await Service.uploadChecklist(body?.uuid, formData)
+    .then(MyToaster)
+    .then(() => {
+      router.push("/task").catch(MyToaster);
+    });
 };
 
 watch(
