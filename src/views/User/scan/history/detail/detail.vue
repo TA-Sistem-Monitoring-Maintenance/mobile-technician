@@ -198,7 +198,7 @@ watch(
           <ChevronLeft class="h-6 w-6 text-gray-700" />
         </button>
         <div class="flex flex-col">
-          <p class="text-lg-semibold text-gray/900">#3966</p>
+          <p class="text-lg-semibold text-gray/900">#History</p>
           <p class="text-sm-regular text-gray/600 pb-2">
             Task detail for technician
           </p>
