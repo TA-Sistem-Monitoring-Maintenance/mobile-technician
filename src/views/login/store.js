@@ -1,5 +1,5 @@
 // store.js
-import { ref } from "vue";
+import { ref, inject } from "vue";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import VueCookies from "vue-cookies";
@@ -9,7 +9,6 @@ import MyToaster from "@components/Toaster/MyToaster"; // Pastikan Anda sudah pu
 export const email = ref("");
 export const password = ref("");
 
-// Handle Login Function
 export async function handleLogin(body) {
   try {
     const encryptedPassword = CryptoJS.AES.encrypt(
@@ -43,16 +42,18 @@ export async function handleLogin(body) {
     });
 
     VueCookies.set("tokenMonitoringMobile", response.data.token, "1d");
-    console.log(response?.data);
     if (
       response?.data?.role?.role_menus?.some(
         (menu_item) => menu_item.menu === "Mobile"
       )
     ) {
       body.router.push("/task");
+      // window.location.reload();
     } else {
       body.router.push("/history");
+      // window.location.reload();
     }
+    // window.location.reload();
   } catch (error) {
     MyToaster({
       message: error.response?.data?.message || error.message || "Login failed",

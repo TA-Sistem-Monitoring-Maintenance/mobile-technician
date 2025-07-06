@@ -43,7 +43,6 @@ const handleChangePage = async (newPage) => {
 };
 
 onMounted(async () => {
-  console.log("jalan");
   try {
     await getTask();
   } catch (error) {
