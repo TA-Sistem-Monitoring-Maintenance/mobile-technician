@@ -33,7 +33,6 @@ const hasScanned = ref(false);
 
 const stopScanner = () => {
   try {
-    // Hentikan ZXing (jika ada)
     if (codeReader && typeof codeReader.reset === "function") {
       codeReader.reset();
       console.log("ZXing scanner stopped");
@@ -50,39 +49,56 @@ const stopScanner = () => {
   }
 };
 
-onMounted(async () => {
-  codeReader = new BrowserMultiFormatReader();
+// onMounted(async () => {
+//   codeReader = new BrowserMultiFormatReader();
 
-  try {
-    const devices = await BrowserCodeReader.listVideoInputDevices();
-    const selectedDeviceId = devices[0]?.deviceId;
+//   try {
+//     const devices = await BrowserCodeReader.listVideoInputDevices();
+//     const selectedDeviceId = devices[0]?.deviceId;
 
-    codeReader.decodeFromVideoDevice(
-      selectedDeviceId,
-      video.value,
-      (res, err) => {
-        if (res && !hasScanned.value) {
-          hasScanned.value = true; // ✅ Jangan izinkan scan ulang
-          const scannedId = res.getText();
-          result.value = scannedId;
-          validateRoom(scannedId); // cek dan navigate
-        }
-        if (
-          err &&
-          !err.message.includes(
-            "No MultiFormat Readers were able to detect the code"
-          )
-        ) {
-          console.error(err);
-        }
+//     codeReader.decodeFromVideoDevice(
+//       selectedDeviceId,
+//       video.value,
+//       (res, err) => {
+//         if (res && !hasScanned.value) {
+//           hasScanned.value = true; // ✅ Jangan izinkan scan ulang
+//           const scannedId = res.getText();
+//           result.value = scannedId;
+//           validateRoom(scannedId); // cek dan navigate
+//         }
+//         if (
+//           err &&
+//           !err.message.includes(
+//             "No MultiFormat Readers were able to detect the code"
+//           )
+//         ) {
+//           console.error(err);
+//         }
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Camera error:", error);
+//   }
+// });
+
+onMounted(() => {
+  const codeReader = new BrowserMultiFormatReader();
+
+  codeReader
+    .decodeFromVideoDevice(null, video.value, (res, err) => {
+      if (res && !hasScanned.value) {
+        hasScanned.value = true;
+        const scannedId = res.getText();
+        result.value = scannedId;
+        validateRoom(scannedId);
       }
-    );
-  } catch (error) {
-    console.error("Camera error:", error);
-  }
+      if (err && !err.message.includes("No MultiFormat Readers")) {
+        console.error(err);
+      }
+    })
+    .catch((e) => console.error("Camera error:", e));
 });
 
-// Watch perubahan route
 watch(
   () => router.fullPath,
   (newPath, oldPath) => {
@@ -96,7 +112,7 @@ const validateRoom = async (scannedId) => {
     const res = await checkScannedRoom(scannedId);
     console.log("response dari checkScannedRoom:", res);
 
-    stopScanner(); // ✅ Tambahkan ini sebelum redirect
+    stopScanner();
 
     if (res?.data) {
       router.push({
@@ -107,7 +123,7 @@ const validateRoom = async (scannedId) => {
       router.push("/notmatchuser");
     }
   } catch (err) {
-    stopScanner(); // ✅ Tambahkan ini juga di error
+    stopScanner();
     router.push("/notmatchuser");
   }
 };
