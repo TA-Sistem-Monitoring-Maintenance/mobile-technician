@@ -181,6 +181,9 @@ const approveMaintenance = async (id) => {
   const response = Service.approveMaintenance(id, formData)
     .then(MyToaster)
     .then(getDetail(uuid))
+    .then(() => {
+      router.push("/task").catch(MyToaster);
+    })
     .catch(MyToaster);
   // if(response)
   return response;

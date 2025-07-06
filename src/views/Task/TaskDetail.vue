@@ -144,7 +144,7 @@ watchEffect(() => {});
           <ChevronLeft class="h-6 w-6 text-gray-700" />
         </button>
         <div class="flex flex-col">
-          <p class="text-lg-semibold text-gray/900">#History</p>
+          <p class="text-lg-semibold text-gray/900">#Task</p>
           <p class="text-sm-regular text-gray/600 pb-2">
             Task detail for technician
           </p>
@@ -182,9 +182,10 @@ watchEffect(() => {});
 
             <!-- “Decline” is always available (but still disabled for technician-approval state) -->
             <MyButton
+              v-if="status === 'Waiting technician approval'"
               color="primary"
               :disabled="
-                taskDetail?.value?.status !== 'Waiting technician approval'
+                taskDetail?.value?.status === 'Waiting technician approval'
               "
               variant="filled"
               class="flex justify-start"

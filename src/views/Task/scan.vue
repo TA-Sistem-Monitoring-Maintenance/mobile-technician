@@ -20,12 +20,12 @@ import MyButtonGroupV2 from "@components/Button/MyButtonGroupV2.vue";
 // import DetailSlider from "./sliders/detailSlider.vue";
 // import importSlider from "./sliders/importSlider.vue";
 import { FilterLines } from "untitledui-js/vue";
-// import { BrowserQRCodeReader } from '@zxing/browser';
 import { BrowserMultiFormatReader, BrowserCodeReader } from "@zxing/browser";
 import { useRouter } from "vue-router";
 
 let codeReader;
 
+const hasScanned = ref(false);
 // onMounted(async () => {
 //   codeReader = new BrowserMultiFormatReader();
 
