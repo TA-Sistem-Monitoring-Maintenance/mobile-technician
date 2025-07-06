@@ -6,7 +6,7 @@ import Index from "./index.vue";
 import { debounce } from "lodash";
 import VueCookies from "vue-cookies";
 import { Service } from "./service";
-import MyToaster from "../../../../backoffice/src/components/Toaster/MyToaster";
+import MyToaster from "@components/Toaster/MyToaster";
 const profile = ref({});
 const profilePicture = ref(null);
 const currentSlider = ref({
