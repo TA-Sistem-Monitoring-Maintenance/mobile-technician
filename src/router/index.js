@@ -36,7 +36,7 @@ const routes = [
     path: "/forgot-password",
     name: "ForgotPassword",
     component: ForgotPassword,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: "/profile",
@@ -106,20 +106,20 @@ const routes = [
 
 // Konfigurasi Vue Router
 const router = createRouter({
-  history: createWebHistory("mobile-technician/"), // Sesuaikan dengan base URL aplikasi Anda
+  history: createWebHistory("mobile-technician/"),
   routes,
 });
 
 // Menambahkan logika sebelum navigasi
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!VueCookies.get("tokenMonitoringMobile"); // Mengecek token di cookies
+  const isAuthenticated = !!VueCookies.get("tokenMonitoringMobile");
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login"); // Redirect ke login jika tidak ada token
+    next("/login"); 
   } else if (to.path === "/login" && isAuthenticated) {
-    next("/task"); // Redirect ke dashboard jika sudah login dan mencoba mengakses halaman login
+    next("/task"); 
   } else {
-    next(); // Lanjutkan navigasi jika sudah terautentikasi atau tidak perlu autentikasi
+    next();
   }
 });
 
