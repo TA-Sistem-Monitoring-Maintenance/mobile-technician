@@ -115,9 +115,9 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!VueCookies.get("tokenMonitoringMobile");
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/login"); 
+    next("/login");
   } else if (to.path === "/login" && isAuthenticated) {
-    next("/task"); 
+    next("/task");
   } else {
     next();
   }

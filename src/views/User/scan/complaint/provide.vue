@@ -142,9 +142,9 @@ const handleSubmit = async () => {
     return MyToaster({ type: "error", message: "Please select an asset" });
   }
 
-  if (!reason.value) {
-    return MyToaster({ type: "error", message: "Please provide a reason" });
-  }
+  // if (!reason.value) {
+  //   return MyToaster({ type: "error", message: "Please provide a reason" });
+  // }
 
   const files = dropzoneRef.value?.getFiles?.() || [];
   if (files.length === 0) {

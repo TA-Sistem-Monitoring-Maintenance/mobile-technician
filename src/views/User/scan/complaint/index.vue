@@ -63,14 +63,23 @@ watchEffect(async () => {
   try {
     const res = await Service.showComplaintRoom(roomId);
     if (res.data) {
-      selectedRoom.value = {
+      console.log(
+        "Room data:",
+        res.data.room.location.id,
+        res.data.room.location.name
+      );
+      asset.value = {
         id: res.data.id,
         name: res.data.name,
       };
-      selectedLocation.value = res.data.location
+      selectedRoom.value = {
+        id: res.data.room.id,
+        name: res.data.room.name,
+      };
+      selectedLocation.value = res.data.room.location
         ? {
-            id: res.data.location.id,
-            name: res.data.location.name,
+            id: res.data.room.location.id,
+            name: res.data.room.location.name,
           }
         : null;
       isRoomLoaded.value = true;
@@ -147,6 +156,7 @@ watchEffect(async () => {
           name="asset"
           :placeholder="'Select Equipment'"
           v-model="asset"
+          :disabled="true"
           :extraData="selectedRoom?.id"
           :asyncFunction="searchAsset"
           :getOptionLabel="(tag) => tag?.name"
