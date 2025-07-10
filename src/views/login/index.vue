@@ -110,7 +110,7 @@ const onSubmit = async () => {
         </h1>
         <p class="text-gray-600">Welcome back! Please enter your details.</p>
       </div>
-      <div>
+      <!-- <div>
         <MyButtonGroupV2
           :buttons="[
             { label: 'Login', value: 'login' },
@@ -123,7 +123,7 @@ const onSubmit = async () => {
             }
           "
         />
-      </div>
+      </div> -->
       <form @submit.prevent="onSubmit" class="mt-10 w-full max-w-sm">
         <div v-if="selectedTab === 'register'">
           <div class="mb-6">

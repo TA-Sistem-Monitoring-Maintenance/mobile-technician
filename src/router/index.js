@@ -36,7 +36,7 @@ const routes = [
     path: "/forgot-password",
     name: "ForgotPassword",
     component: ForgotPassword,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false }, // <-- set to false so it's accessible without login
   },
   {
     path: "/profile",
